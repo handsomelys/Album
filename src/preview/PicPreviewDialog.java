@@ -37,19 +37,19 @@ public class PicPreviewDialog extends JFrame {
 		fChooser.setAccessory(preview);
 		fChooser.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent e) {
-				do_propertyChange(e);
+				doPropertyChange(e);
 			}
 		});
 		
 		fChooser.setFileFilter(new FileNameExtensionFilter("jpg","jpeg","gif","png","bmp"));
 	}
 	
-	protected void do_propertyChange(PropertyChangeEvent e) {
+	protected void doPropertyChange(PropertyChangeEvent e) {
 		if(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY == e.getPropertyName()) {
 			File pic = (File)e.getNewValue();
 			if(pic != null && pic.isFile()) {
 				try {
-					Image image = getToolkit().getImage(pic.toURL());
+					Image image = getToolkit().getImage(pic.toURI().toURL());
 					preview.setImage(image);
 					preview.repaint();
 				} catch (MalformedURLException e1) {

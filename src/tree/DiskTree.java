@@ -2,13 +2,10 @@ package tree;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.EventQueue;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.Icon;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,17 +18,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
+
 public class DiskTree extends JPanel {
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	// TreeCellRenderer 改变JTree的显示方式的接口
 	private final class FileRenderer implements TreeCellRenderer{
-
-
-		
 		@Override 
 		public Component getTreeCellRendererComponent(JTree tree,Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
 			
@@ -57,7 +48,7 @@ public class DiskTree extends JPanel {
 		}
 	}
 	
-	private JPanel contentpane;
+	//private JPanel contentpane;
 	private JTree tree;
 	private DefaultMutableTreeNode rootNode;
 	

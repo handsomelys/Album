@@ -20,6 +20,7 @@ public class AddressBar extends JPanel {
         if(this.label != null)
             this.remove(this.label);
         label = new JLabel(address);
+        this.setLayout(new BorderLayout());
         this.add(label, BorderLayout.WEST);
     }
     public String getAddress() {

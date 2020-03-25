@@ -2,7 +2,8 @@ package topbar;
 
 import java.awt.BorderLayout;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
 
 public class ImformationBar extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -24,9 +25,9 @@ public class ImformationBar extends JPanel {
         String diretory, int total, int selected, String size) {
         this.title = new JLabel();
         this.count = new JLabel();
-        this.update(diretory, total, selected, size);
         this.add(this.title, BorderLayout.NORTH);
         this.add(this.count, BorderLayout.SOUTH);
+        this.update(diretory, total, selected, size);
     }
 
     public void update(String diretory, int total, int selected, String size) {
