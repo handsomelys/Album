@@ -42,7 +42,6 @@ public class PicPreviewDialog extends JFrame {
 		});
 		
 		fChooser.setFileFilter(new FileNameExtensionFilter("jpg","jpeg","gif","png","bmp"));
-		
 	}
 	
 	protected void do_propertyChange(PropertyChangeEvent e) {
