@@ -47,6 +47,9 @@ public class Utils {
      * write it later
      * @param args
      */
+    public static void cutFile(File f, String dest) { } 
+    public static void deleteFile(File f) { }
+
     public static void renameFiles(ArrayList<File> files, String name,
         int start, int bit) {
             for (int i = 0; i < files.size(); ++i) {
