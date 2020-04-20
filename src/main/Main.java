@@ -28,7 +28,7 @@ public class Main{
         JFrame mainFrame = new JFrame();
         PicPreviewDialog previewFrame = new PicPreviewDialog();
         DiskTree disktree = new DiskTree();
-        TopBar topbar = new TopBar();
+        TopBar topbar = new TopBar("d:/document");
         JButton previewButton = new JButton("preview");
 
         // assigning listener

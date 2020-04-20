@@ -2,6 +2,7 @@ package topbar;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.event.*;
 
@@ -9,6 +10,7 @@ import event.DiretoryChangedManager;
 
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.awt.GridBagConstraints;
 
 public class TopBar extends JPanel {
@@ -18,13 +20,23 @@ public class TopBar extends JPanel {
     public static final String FORWARD = "→";
     public static final String UPWARD = "↑";
 
+    public File diretory;
+    public String diretoryName;
+    public String diretorySize;
+    public int totalPictureCount;
+    public int selectedPictureCount;
+
     // directory operation buttons
     public JButton buttonBackward;
     public JButton buttonForward;
     public JButton buttonUpward;
     public DiretoryChangedManager dcm;
+
+    public JPanel spam;
     
-    public DiretoryButtons db;
+    public JLabel diretoryTitle;
+    public JLabel diretoryStats;
+    
     public AddressBar ab;
     public OperationButtons ob;
     public ImformationBar ib;
@@ -47,10 +59,18 @@ public class TopBar extends JPanel {
         }  
     }
 
-    public TopBar() {
+    public TopBar(String d) {
         this.setBorder(BorderFactory.createEtchedBorder());
-        this.setLayout(new GridBagLayout());
+        GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
+        this.setLayout(gbl);
+
+        this.spam = new JPanel();
+        this.diretory = new File(d);
+        this.diretoryName = this.diretory.getName();
+        this.diretorySize = String.valueOf(this.diretory.length());
+        this.totalPictureCount = 1;
+        this.selectedPictureCount = -1;
 
         this.buttonBackward = new JButton(TopBar.BACKWARD);
         this.buttonForward = new JButton(TopBar.FORWARD);
@@ -60,11 +80,48 @@ public class TopBar extends JPanel {
         this.buttonBackward.addActionListener(dbal);
         this.buttonForward.addActionListener(dbal);
         this.buttonUpward.addActionListener(dbal);
-    
+
+        this.diretoryTitle = new JLabel(this.diretoryName);
+        this.diretoryStats = new JLabel(String.format(
+            "%d张图片(%s) - 选中%d张图片",
+            this.totalPictureCount,
+            this.diretorySize,
+            this.selectedPictureCount));
+        
         this.ab = new AddressBar("d:/document");
         this.ob = new OperationButtons();
         this.ib = new ImformationBar();
 
+        // buttons that browse between diretory
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        gbc.weightx = 1;
+        gbc.weighty = 4;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.WEST;
+        this.add(this.buttonBackward, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        this.add(this.buttonForward, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        this.add(this.buttonUpward, gbc);
+
+        // address bar
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        gbc.weightx = 7;
+        gbc.weighty = 4;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        this.add(this.ab, gbc);
+        /*
         // creating spam panel to align components
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -79,46 +136,30 @@ public class TopBar extends JPanel {
             gbc.gridx = i;
             this.add(spam, gbc);
         }
-
-        // buttons that browse between diretory
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        gbc.gridheight = 1;
-        gbc.weightx = 0.2;
-        gbc.weighty = 0.4;
-        gbc.anchor = GridBagConstraints.WEST;
-        this.add(this.db, gbc);
-
-        // address bar
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.gridwidth = 4;
-        gbc.gridheight = 1;
-        gbc.weightx = 0.8;
-        gbc.weighty = 0.4;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.CENTER;
-        this.add(this.ab, gbc);
+        */
 
         // Information Bar
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 1;
         gbc.gridwidth = 3;
         gbc.gridheight = 1;
-        gbc.weightx = 0.6;
-        gbc.weighty = 0.6;
+        gbc.weightx = 3;
+        gbc.weighty = 3;
+        gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
-        this.add(this.ib, gbc);
+        this.add(this.diretoryTitle, gbc);
+        gbc.gridy = 2;
+        this.add(this.diretoryStats, gbc);
 
         // Operation Buttons
         gbc.gridx = 3;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        gbc.gridheight = 1;
-        gbc.weightx = 0.4;
-        gbc.weighty = 0.6;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 2;
+        gbc.weightx = 7;
+        gbc.weighty = 6;
         gbc.anchor = GridBagConstraints.EAST;
         this.add(this.ob, gbc);
+
     }
 }
