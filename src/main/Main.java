@@ -11,6 +11,8 @@ import javax.swing.UIManager;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 
+import java.io.File;
+
 import preview.*;
 import tree.*;
 import topbar.*;
@@ -25,10 +27,11 @@ public class Main{
         }
 
         // initializing variable
+        File f = new File("D:/picture/sticker");
         JFrame mainFrame = new JFrame();
         PicPreviewDialog previewFrame = new PicPreviewDialog();
         DiskTree disktree = new DiskTree();
-        TopBar topbar = new TopBar("d:/document");
+        TopBar topbar = new TopBar(f);
         JButton previewButton = new JButton("preview");
 
         // assigning listener
