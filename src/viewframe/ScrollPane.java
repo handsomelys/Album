@@ -22,7 +22,7 @@ public class ScrollPane extends JScrollPane {
 	public void paint(Graphics g) {
 		super.paint(g);
 		g.clearRect(0, 0, this.getWidth(), this.getHeight());
-		g.drawImage(imgs.get(contentnum),this.getWidth()/2-(pic_Width/2),this.getHeight()/2-(pic_Height/2),pic_Width,pic_Height,null);
+		g.drawImage(imgs.get(contentnum),pic_x,pic_y,pic_Width,pic_Height,null);
 	}
 
 }
