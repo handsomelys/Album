@@ -1,6 +1,7 @@
 package operation;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,10 +9,8 @@ import java.nio.file.Path;
 
 public class Utils {
     /**
-     * @param files
-     *        Files to copy.
-     * @param dest
-     *        The desination path.
+     * @param files files to copy
+     * @param dest the desination path
      */
     public static void copyFile(File f, String dest) {
         try {
@@ -30,10 +29,8 @@ public class Utils {
     }
 
     /**
-     * @param file
-     *        File to rename.
-     * @param name
-     *        Only name.
+     * @param file file to rename
+     * @param name only name
      */
     public static void renameFile(File file, String name) {
         File nf = Path.of(file.getParent(), name).toFile();
@@ -58,6 +55,33 @@ public class Utils {
                 Utils.renameFile(files.get(i),
                     name + String.format("%0"+bit+"d", i) + suffix);
             }
+    }
+    public static boolean isPicture(File f) {
+        String regex = ".*.(jpg|jpeg|png|bmp|gif)$";
+        Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        return p.matcher(f.getName()).matches();
+    }
+    public static int getPicturesCount(File directory) {
+        int count = 0;
+        for (File f: directory.listFiles())
+            count += isPicture(f)? 1: 0;
+        return count;
+    }
+    public static long getPicturesSize(File directory) {
+        long total = 0;
+        for (File f: directory.listFiles())
+            total += isPicture(f)? f.length(): 0;
+        return total;
+    }
+    public static String sizeToString(long size) {
+        String[] sign = {"Byte", "KB", "MB", "GB", "TB"};
+        int index = 0;
+        double length = size;
+        while (length > 1024) {
+            length /= 1024;
+            ++index;
+        }
+        return String.format("%.2f%s", length, sign[index]);
     }
     public static void main(String args[]) {
         String path = "C:\\Users\\lsn\\Desktop\\New folder\\WeChat Screenshot_20200304225843.png";

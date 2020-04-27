@@ -18,6 +18,6 @@ public class Manager {
     }
     public void notifyAll(EventObject e) {
         for (InformationListener l: listeners)
-            l.change();
+            l.update();
     }
 }

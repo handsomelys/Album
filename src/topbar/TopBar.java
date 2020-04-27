@@ -1,17 +1,17 @@
 package topbar;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.event.*;
-
-import event.DiretoryChangedManager;
-
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.BorderFactory;
 import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.awt.GridBagConstraints;
+
+import operation.Utils;
+import event.DirectoryUpdatedManager;
 
 public class TopBar extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -23,16 +23,15 @@ public class TopBar extends JPanel {
     public static final String REDO = "重做";
     public static final String DELETE = "删除";
     public static final String SLIDESHOW = "幻灯片";
-    public static final String SORTMETHOD = "排序";
 
-    // general
-    public File diretory;
-    public String diretoryName;
-    public String diretorySize;
+    // general variable
+    public File directory;
+    public String directoryName;
+    public String directorySize;
     public int totalPictureCount;
     public int selectedPictureCount;
 
-    // container
+    // containers
     public JPanel container1;
     public JPanel container2;
     public JPanel container3;
@@ -42,49 +41,29 @@ public class TopBar extends JPanel {
     public JButton buttonForward;
     public JButton buttonUpward;
     public JLabel addressBar;
-    public DiretoryChangedManager dcm;
+    public DirectoryUpdatedManager dcm;
     
     // informations
-    public JLabel diretoryTitle;
-    public JLabel diretoryStats;
+    public JLabel directoryTitle;
+    public JLabel directoryStats;
 
     // operation buttons
     public JButton undo;
     public JButton redo;
     public JButton delete;
     public JButton slideShow;
-    
-    public class DiretoryButtonActionListener implements ActionListener {
-        public DiretoryChangedManager dcm;
-        public DiretoryButtonActionListener(DiretoryChangedManager dcm) {
-            this.dcm = dcm;
-        }
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String command = e.getActionCommand();
-            if (command.equals(TopBar.BACKWARD)) {
-                this.dcm.back();
-            } else if (command.equals(TopBar.FORWARD)) {
-                this.dcm.forward();
-            } else if (command.equals(TopBar.UPWARD)) {
-                this.dcm.up();
-            }
-        }  
-    }
 
-    public TopBar(File diretory) {
+    /**
+     * initializing topbar with a specify directory
+     * @param directory a directory as form of java.io.File
+     */
+    public TopBar(File directory) {
         GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
         this.setBorder(BorderFactory.createEtchedBorder());
         this.setLayout(gbl);
 
-        this.diretory = diretory;
-        this.diretoryName = this.diretory.getName();
-        this.diretorySize = String.valueOf(this.diretory.length());
-        this.totalPictureCount = 1;
-        this.selectedPictureCount = -1;
-
-        // configuring containers
+        // initializing containers
         this.container1 = new JPanel();
         this.container1.setLayout(gbl);
         this.container2 = new JPanel();
@@ -93,33 +72,32 @@ public class TopBar extends JPanel {
         this.container3 = new JPanel();
         this.container3.setLayout(gbl);
 
-        // configuring directory buttons
+        // initializing directory buttons
+        this.dcm = new DirectoryUpdatedManager();
         this.buttonBackward = new JButton(TopBar.BACKWARD);
         this.buttonForward = new JButton(TopBar.FORWARD);
         this.buttonUpward = new JButton(TopBar.UPWARD);
-        DiretoryButtonActionListener dbal = 
-            new DiretoryButtonActionListener(this.dcm);
+        DirectoryButtonActionListener dbal = 
+            new DirectoryButtonActionListener(this.dcm);
         this.buttonBackward.addActionListener(dbal);
         this.buttonForward.addActionListener(dbal);
         this.buttonUpward.addActionListener(dbal);
 
-        // configuring address bar
-        this.addressBar = new JLabel(this.diretory.getAbsolutePath());
+        // initializing address bar
+        this.addressBar = new JLabel("address");
         this.addressBar.setBorder(BorderFactory.createEtchedBorder());
 
-        // configuring informations
-        this.diretoryTitle = new JLabel(this.diretoryName);
-        this.diretoryStats = new JLabel(String.format(
-            "%d张图片(%s) - 选中%d张图片",
-            this.totalPictureCount,
-            this.diretorySize,
-            this.selectedPictureCount));
+        // initializing informations
+        this.directoryTitle = new JLabel("directory name");
+        this.directoryStats = new JLabel("directory stats");
 
-        // configuring operation buttons
+        // initializing operation buttons
         this.undo = new JButton(TopBar.UNDO);
         this.redo = new JButton(TopBar.REDO);
         this.delete = new JButton(TopBar.DELETE);
         this.slideShow = new JButton(TopBar.SLIDESHOW);
+
+        updateDirectory(directory);
 
         // put directory button and address bar on the container1
         gbc.gridx = 0;
@@ -151,9 +129,9 @@ public class TopBar extends JPanel {
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
-        this.container2.add(this.diretoryTitle, gbc);
+        this.container2.add(this.directoryTitle, gbc);
         gbc.gridy = 1;
-        this.container2.add(this.diretoryStats, gbc);
+        this.container2.add(this.directoryStats, gbc);
 
         // put the operation buttons on the container3
         gbc.gridx = 0;
@@ -193,24 +171,44 @@ public class TopBar extends JPanel {
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
         this.add(container3, gbc);
-        /*
-        // creating spam panel to align components
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1;
-        gbc.gridheight = 1;
-        gbc.weightx = 0.2;
-        gbc.weighty = 0;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
-        for(int i = 0; i < 5; ++i) {
-            JPanel spam = new JPanel();
-            gbc.gridx = i;
-            this.add(spam, gbc);
-        }
-        */
     }
-    public TopBar(String diretory) {
-        this(new File(diretory));
+    public TopBar(String directory) {
+        this(new File(directory));
+    }
+
+    public void updateDirectory(File directory) {
+        // update the built in directory variable
+        this.directory = directory;
+        this.directoryName = this.directory.getName();
+        this.directorySize =
+            Utils.sizeToString(Utils.getPicturesSize(directory));
+        this.totalPictureCount = Utils.getPicturesCount(directory);
+        this.selectedPictureCount = 0;
+        // update address bar
+        this.addressBar.setText(this.directory.getAbsolutePath());
+        // update informations
+        this.directoryTitle.setText(this.directoryName);
+        this.directoryStats.setText(String.format("%d张图片(%s) - 选中%d张图片",
+            this.totalPictureCount,
+            this.directorySize,
+            this.selectedPictureCount));
+    }
+    
+    public class DirectoryButtonActionListener implements ActionListener {
+        public DirectoryUpdatedManager dcm;
+        public DirectoryButtonActionListener(DirectoryUpdatedManager dcm) {
+            this.dcm = dcm;
+        }
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String command = e.getActionCommand();
+            if (command.equals(TopBar.BACKWARD)) {
+                this.dcm.back();
+            } else if (command.equals(TopBar.FORWARD)) {
+                this.dcm.forward();
+            } else if (command.equals(TopBar.UPWARD)) {
+                this.dcm.up();
+            }
+        }  
     }
 }
