@@ -8,6 +8,8 @@ import javax.swing.JLabel;
 import javax.imageio.ImageIO;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -16,6 +18,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.font.*;
@@ -33,24 +38,25 @@ public class ViewFrame extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private ArrayList<BufferedImage> img;
-	private int comment_view;
 	private JPanel jpl;
 	private JButton turn_next;
 	private JButton turn_back;
 	private JButton turn_big;
 	private JButton turn_small;
-	private JLabel image_show;
 	private JButton start;
 	private JButton end;
+	private JButton settings;
 	private ScrollPane scrollPane;
 	private JPanel bottombtn;
-	private Graphics gra;
-	private Graphics2D gra2D;
 	private int contentnum=0;
 	private BufferedImage contentpic;
 	private int pic_Width,pic_Height;
 	private int sizeset=0;
 	private Timer autoShow=new Timer();
+	private int contentxMove=0,contentyMove=0;
+	private boolean isDragged=false;
+	private int mousestartx,mousestarty;
+	private int nowScrollx,nowScrolly;
 	private TimerTask task_autoShow=new TimerTask() {
 		public void run(){
 			drawnext();
@@ -96,36 +102,122 @@ public class ViewFrame extends JFrame {
 			
 		}
 	};
+	
 	private ComponentAdapter componentAdapter=new ComponentAdapter() {
 		@Override
 		public void componentResized(ComponentEvent e) {
+			
 			jpl.setBounds(0,0,e.getComponent().getWidth(),e.getComponent().getHeight()-40);
-			bottombtn.setBounds(0,(int) (jpl.getHeight()*0.9),jpl.getWidth(),(int)(jpl.getHeight()*0.1));
-			int spaceBtwn=(int)(bottombtn.getWidth()*0.01);
-	    	int btnXSize=(int)(bottombtn.getWidth()*0.11);
-	    	
-	    	int btnY_1=(int)(bottombtn.getHeight()*0.33);
-	    	int btnYSize1=btnY_1;
-	    	
-	    	int btnY_2=(int)(bottombtn.getHeight()*0.25);
-	    	int btnYSize2=btnY_2*2;		
-	    	turn_back.setBounds(2*spaceBtwn+2*btnXSize,btnY_1,btnXSize,btnYSize1);
-	    	turn_next.setBounds(4*spaceBtwn+3*btnXSize,btnY_1,btnXSize,btnYSize1);
-	    	turn_big.setBounds(5*spaceBtwn+4*btnXSize,btnY_2,btnXSize,btnYSize2);
-	    	turn_small.setBounds(6*spaceBtwn+5*btnXSize,btnY_2,btnXSize,btnYSize2);
-	    	start.setBounds(7*spaceBtwn+6*btnXSize,btnY_2,btnXSize,btnYSize2);
-	    	end.setBounds(8*spaceBtwn+7*btnXSize,btnY_2,btnXSize,btnYSize2);
-	    	scrollPane.setBounds(0, 0, jpl.getWidth(), (int)(jpl.getHeight()*0.9));
+			bottombtn.setBounds(0,jpl.getHeight()-80,jpl.getWidth(),80);
+			int tempx=bottombtn.getWidth()/2;
+	    	int tempy=bottombtn.getHeight()/2;		
+	    	turn_next.setBounds(tempx+5,tempy-15,30,30);
+	    	turn_back.setBounds(tempx-35,tempy-15,30,30);
+	    	turn_big.setBounds(tempx+40,tempy-15,30,30);
+	    	turn_small.setBounds(tempx+75,tempy-15,30,30);
+	    	start.setBounds(tempx+110,tempy-15,30,30);
+	    	end.setBounds(tempx+145,tempy-15,30,30);
+	    	scrollPane.setBounds(0, 0, jpl.getWidth(), jpl.getHeight()-80);
 	    	imgAdapt();
 	    	drawContent(scrollPane.getWidth()/2-(pic_Width/2),scrollPane.getHeight()/2-(pic_Height/2));
 		}
 	    	
 	};
+	
+	/*private MouseListener mouse_1=new MouseListener() {
+		 public void mouseClicked(MouseEvent e) {
+		       
+		      }
+		      // 按下鼠标时，更改状态，并且记录拖拽起始位置。
+		      public void mousePressed(MouseEvent e) {
+		        if (!isDragged) {
+		          isDragged=true;
+		          mousestartx = e.getPoint().getX();
+		          
+		        }
+		      }
+		      // 松开鼠标时更改状态
+		      public void mouseReleased(MouseEvent e) {
+		        if (status == DragStatus.Dragging) {
+		          status = DragStatus.Ready;
+		        }
+		      }
+		      public void mouseEntered(MouseEvent e) {
+		      }
+		      public void mouseExited(MouseEvent e) {
+		      }
+		    };
+	private  MouseMotionListener mouse_2=new MouseMotionListener() {
+		      // Java 有拖拽事件，在这个事件中移动图片位置
+		      public void mouseDragged(MouseEvent e) {
+		        if (status == DragStatus.Dragging) {
+		          moveImage(e.getPoint());
+		        }
+		      }
+		      public void mouseMoved(MouseEvent e) {
+		      };*/
+	private MouseListener mouse_1=new MouseListener() {
+		public void mouseClicked(MouseEvent e) {
+			
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+			if(isDragged==false) {
+				isDragged=true;
+				mousestartx=e.getX();
+				mousestarty=e.getY();
+				nowScrollx=scrollPane.pic_x;
+				nowScrolly=scrollPane.pic_y;
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+			if(isDragged)isDragged=false;
+			if(pic_Height<=scrollPane.getHeight()&&pic_Width<=scrollPane.getWidth()) {
+				int x=scrollPane.getWidth()/2-(pic_Width/2);
+		    	int y=scrollPane.getHeight()/2-(pic_Height/2);
+				drawContent(x,y);
+			}
+				
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}
+	};
+	private MouseMotionListener mouse_2=new MouseMotionListener() {
+
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			// TODO Auto-generated method stub
+			if(isDragged) {
+				contentxMove=e.getX()-mousestartx;
+				contentyMove=e.getY()-mousestarty;
+				
+				drawContent(nowScrollx+contentxMove,nowScrolly+contentyMove);
+			}
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+		}
+		
+	};
+	
+	
 	public ViewFrame(String s,File p) {
 		super(s);
+		
 		img=new ArrayList<BufferedImage>();
 		
-		comment_view=0;
+		
 		try {
 			if(p.isDirectory())
 			opendirectory(p);
@@ -138,7 +230,7 @@ public class ViewFrame extends JFrame {
 		this.setTitle("kkp图片浏览");
 		this.setFont(new Font("宋体",Font.PLAIN,20));
 		this.setSize(1920,1080-40);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		//this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setLocationRelativeTo(null);
         this.setLayout(null);
         
@@ -148,13 +240,15 @@ public class ViewFrame extends JFrame {
 		
 		bottombtn =new JPanel();                                                 //initbottom();
 		bottombtn.setLayout(null);
-		bottombtn.setBounds(0,(int) (jpl.getHeight()*0.9),jpl.getWidth(),(int)(jpl.getHeight()*0.1));
+		bottombtn.setBounds(0,jpl.getHeight()-80,jpl.getWidth(),80);
+		bottombtn.setBackground(new Color(245,245,245));
 		
 		
 		initButton();
 		
 		initscrollpane();
-		scrollPane.imgs=img;
+		
+		//scrollPane.imgs=img;
 		
 		
 		//draw
@@ -175,13 +269,20 @@ public class ViewFrame extends JFrame {
 				else if(e.getWheelRotation()>0)drawnext();
 			}
 		});
+		scrollPane.addMouseListener(mouse_1);
+		scrollPane.addMouseMotionListener(mouse_2);
 		jpl.add(bottombtn);
-		
+		this.setMinimumSize(new Dimension(430,0));
 		this.setContentPane(jpl);
 		this.addComponentListener(componentAdapter);   //添加自动调节
 		this.setVisible(true);
 		
 	}
+	
+	
+	
+	
+	
 	
 	public void opendirectory(File p) throws IOException {
 		File[] list_pic=p.listFiles();
@@ -211,29 +312,39 @@ public class ViewFrame extends JFrame {
 		}
 	}
     public void initButton() {
-    	turn_back=new JButton("上一页");
-    	turn_next=new JButton("下一张");
-    	turn_big=new JButton("放大");
-    	turn_small= new JButton("缩小");
-    	start=new JButton("播放");
-    	end= new JButton("停止");
-    			
-    	int spaceBtwn=(int)(bottombtn.getWidth()*0.01);
-    	int btnXSize=(int)(bottombtn.getWidth()*0.11);
+    	turn_back=new JButton();
+    	turn_next=new JButton();
+    	turn_big=new JButton();
+    	turn_small= new JButton();
+    	start=new JButton();
+    	end= new JButton();
     	
-    	int btnY_1=(int)(bottombtn.getHeight()*0.33);
-    	int btnYSize1=btnY_1;
+    	turn_big.setIcon(new ImageIcon("src/turnbig.png"));
+    	turn_small.setIcon(new ImageIcon("src/turnsmall.png"));
+    	turn_next.setIcon(new ImageIcon("src/turnnext.png"));
+    	turn_back.setIcon(new ImageIcon("src/turnback.png"));
+    	start.setIcon(new ImageIcon("src/start.png"));
+    	end.setIcon(new ImageIcon("src/end.png"));
     	
-    	int btnY_2=(int)(bottombtn.getHeight()*0.25);
-    	int btnYSize2=btnY_2*2;		
-    	turn_back.setBounds(2*spaceBtwn+2*btnXSize,btnY_1,btnXSize,btnYSize1);
-    	turn_next.setBounds(4*spaceBtwn+3*btnXSize,btnY_1,btnXSize,btnYSize1);
-    	turn_big.setBounds(5*spaceBtwn+4*btnXSize,btnY_2,btnXSize,btnYSize2);
-    	turn_small.setBounds(6*spaceBtwn+5*btnXSize,btnY_2,btnXSize,btnYSize2);
-    	start.setBounds(7*spaceBtwn+6*btnXSize,btnY_2,btnXSize,btnYSize2);
-    	end.setBounds(8*spaceBtwn+7*btnXSize,btnY_2,btnXSize,btnYSize2);
+    	turn_big.setBorder(null);
+    	turn_small.setBorder(null);
+    	turn_next.setBorder(null);
+    	turn_back.setBorder(null);
+    	start.setBorder(null);
+        end.setBorder(null);
+    	
+    	int tempx=bottombtn.getWidth()/2;
+    	int tempy=bottombtn.getHeight()/2;		
+    	turn_next.setBounds(tempx+5,tempy-15,30,30);
+    	turn_back.setBounds(tempx-35,tempy-15,30,30);
+    	turn_big.setBounds(tempx+40,tempy-15,30,30);
+    	turn_small.setBounds(tempx+75,tempy-15,30,30);
+    	start.setBounds(tempx+110,tempy-15,30,30);
+    	end.setBounds(tempx+145,tempy-15,30,30);
+    	
     	bottombtn.add(turn_next);
     	bottombtn.add(turn_back);bottombtn.add(turn_big);bottombtn.add(turn_small);bottombtn.add(start);bottombtn.add(end);
+    	
     	turn_next.addActionListener(ac_next);
     	turn_back.addActionListener(ac_back);
     	turn_big.addActionListener(ac_big);
@@ -243,23 +354,8 @@ public class ViewFrame extends JFrame {
     }
     
     public void initscrollpane() {
-    	scrollPane=new ScrollPane(img);/* {
-    		/**
-			 * 
-			 
-			private static final long serialVersionUID = 1L;
-			public int pic_Width=0;
-    		public int pic_Height=0;
-    		public ArrayList<BufferedImage> imgs=null;
-    		public int contentnum;
-    		@Override
-    		protected void paintComponent(Graphics g) {
-    			super.paintComponent(g);
-    			g.clearRect(0, 0, this.getWidth(), this.getHeight());
-    			g.drawImage(imgs.get(contentnum),this.getWidth()/2,this.getHeight()/2,pic_Width,pic_Height,null);
-    		}
-    	};*/
-    	scrollPane.setBounds(0, 0, jpl.getWidth(), (int)(jpl.getHeight()*0.9));
+    	scrollPane=new ScrollPane(img);
+    	scrollPane.setBounds(0, 0, jpl.getWidth(), jpl.getHeight()-80);
     	scrollPane.setBackground(null);
     	jpl.add(scrollPane);
     }
@@ -322,5 +418,6 @@ public class ViewFrame extends JFrame {
     		pic_Height=(int)(pic_Height/scale);pic_Width=(int)(pic_Width/scale);
     				}
     }
+    
     
 }
