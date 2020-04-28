@@ -44,7 +44,9 @@ public class Main {
         this.dol = new DirectoryOperationList();
 
         // configuring top bar
-        this.topbar.freezeDirectoryButton("init");
+        this.topbar.freezeDirectoryButton("back");
+        this.topbar.freezeDirectoryButton("forward");
+        this.dol.push(this.directory);
 
         // assigning listener
         mainFrame.addWindowListener(new WindowAdapter() {
@@ -64,23 +66,23 @@ public class Main {
             public void actionPerformed(InformationEvent ie) {
                 String command = ie.getCommand();
                 if (command.equals("back")) {
-                    File f = Main.this.dol.prior();
-                    Main.this.updateDirectory(f);
+                    File prior = Main.this.dol.getPrior();
+                    if (prior != null)
+                        Main.this.updateDirectory(prior);
+                    Main.this.dol.rewind();
                 } else if (command.equals("forward")) {
-                    File f = Main.this.dol.next();
-                    Main.this.updateDirectory(f);
+                    File next = Main.this.dol.getNext();
+                    if (next != null)
+                        Main.this.updateDirectory(next);
+                    Main.this.dol.push(next);
                 } else if (command.equals("up")) {
                     File parent = Main.this.directory.getParentFile();
-                    if(parent == null)
-                        Main.this.topbar.freezeDirectoryButton("root");
-                    else {
-                        if (!Main.this.dol.push(Main.this.directory))
-                            Main.this.topbar.freezeDirectoryButton("nofuture");
-                        else
-                            Main.this.topbar.freezeDirectoryButton("unlock");
+                    if(parent != null) {
                         Main.this.updateDirectory(parent);
+                        Main.this.dol.push(Main.this.directory);
                     }
                 }
+                configureDirectoryButtons();
             }
         });
         
@@ -120,13 +122,23 @@ public class Main {
         mainFrame.add(previewButton, gbc);
     }
     public void updateDirectory(File directory) {
-        this.dol.push(this.directory);
         this.directory = directory;
         this.topbar.updateDirectory(directory);
     }
-    public void beforeDirectory(File directory) {
-        this.directory = directory;
-        this.topbar.updateDirectory(directory);
+    public void configureDirectoryButtons() {
+        File parent = Main.this.directory.getParentFile();
+        if(parent == null)
+            Main.this.topbar.freezeDirectoryButton("up");
+        
+        if (this.dol.getPrior() == null)
+            this.topbar.freezeDirectoryButton("back");
+        else
+            this.topbar.unlockDirectoryButton("back");
+        
+        if (this.dol.getNext() == null)
+            this.topbar.freezeDirectoryButton("forward");
+        else
+            this.topbar.unlockDirectoryButton("forward");
     }
     public static void main(String[] args) {
         File directory = new File("D:\\picture\\sticker\\猫");

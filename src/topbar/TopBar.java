@@ -196,26 +196,21 @@ public class TopBar extends JPanel implements InformationSource {
             this.totalPictureCount, this.directorySize,
             this.selectedPictureCount));
     }
-    public void freezeDirectoryButton(String state) {
-        if (state.equals("init")) {
-            this.buttonForward.setEnabled(false);
+    public void freezeDirectoryButton(String type) {
+        if (type.equals("back"))
             this.buttonBackward.setEnabled(false);
-        } else if (state.equals("unlock")) {
-            this.buttonForward.setEnabled(true);
-            this.buttonBackward.setEnabled(true);
-            this.buttonUpward.setEnabled(true);
-        } else if (state.equals("root")) {
-            // reaching the root level, freezing the up buttons
+        else if (type.equals("forward"))
+            this.buttonForward.setEnabled(false);
+        else if (type.equals("up"))
             this.buttonUpward.setEnabled(false);
-        } else if (state.equals("nofuture")) {
-            // have done some new actions, current status is the newest
-            this.buttonForward.setEnabled(false);
+    }
+    public void unlockDirectoryButton(String type) {
+        if (type.equals("back"))
             this.buttonBackward.setEnabled(true);
-        } else if (state.equals("nopast")) {
-            // reaching the head of the timeline, current status is the first
+        else if (type.equals("forward"))
             this.buttonForward.setEnabled(true);
-            this.buttonBackward.setEnabled(false);
-        } 
+        else if (type.equals("up"))
+            this.buttonUpward.setEnabled(true);
     }
 
     public class DirectoryButtonListener implements ActionListener {
