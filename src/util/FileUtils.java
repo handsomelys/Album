@@ -1,4 +1,4 @@
-package operation;
+package util;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class Utils {
+public class FileUtils {
     /**
      * @param files files to copy
      * @param dest the desination path
@@ -24,7 +24,7 @@ public class Utils {
     }
     public static void copyFiles(ArrayList<File> files, String dest) {
         for (File f: files) {
-            Utils.copyFile(f, dest);
+            FileUtils.copyFile(f, dest);
         }
     }
 
@@ -52,7 +52,7 @@ public class Utils {
             for (int i = 0; i < files.size(); ++i) {
                 String previous = files.get(i).getName();
                 String suffix = previous.substring(previous.lastIndexOf("."));
-                Utils.renameFile(files.get(i),
+                FileUtils.renameFile(files.get(i),
                     name + String.format("%0"+bit+"d", i) + suffix);
             }
     }
@@ -90,9 +90,9 @@ public class Utils {
         File f = new File(path);
         File nf = new File("C:\\Users\\lsn\\Desktop\\New folder (2)\\WeChat Screenshot_20200304225843.png");
         a.add(f);
-        Utils.copyFiles(a, dest);
+        FileUtils.copyFiles(a, dest);
         a.remove(f);
         a.add(nf);
-        Utils.renameFiles(a, "good", 1, 4);
+        FileUtils.renameFiles(a, "good", 1, 4);
     }
 }

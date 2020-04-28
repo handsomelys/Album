@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashSet;
 
-import operation.Utils;
+import util.FileUtils;
 import event.InformationSource;
 import event.InformationEvent;
 import event.InformationListener;
@@ -184,9 +184,9 @@ public class TopBar extends JPanel implements InformationSource {
         // update the built in directory variable
         this.directory = directory;
         this.directoryName = this.directory.getName();
-        this.directorySize =
-            Utils.sizeToString(Utils.getPicturesSize(directory));
-        this.totalPictureCount = Utils.getPicturesCount(directory);
+        this.directorySize = FileUtils.sizeToString(
+            FileUtils.getPicturesSize(directory));
+        this.totalPictureCount = FileUtils.getPicturesCount(directory);
         this.selectedPictureCount = 0;
         // update address bar
         this.addressBar.setText(this.directory.getAbsolutePath());
@@ -196,8 +196,15 @@ public class TopBar extends JPanel implements InformationSource {
             this.totalPictureCount, this.directorySize,
             this.selectedPictureCount));
     }
-    public void freezeButton(String state) {
-        if (state.equals("root")) {
+    public void freezeDirectoryButton(String state) {
+        if (state.equals("init")) {
+            this.buttonForward.setEnabled(false);
+            this.buttonBackward.setEnabled(false);
+        } else if (state.equals("unlock")) {
+            this.buttonForward.setEnabled(true);
+            this.buttonBackward.setEnabled(true);
+            this.buttonUpward.setEnabled(true);
+        } else if (state.equals("root")) {
             // reaching the root level, freezing the up buttons
             this.buttonUpward.setEnabled(false);
         } else if (state.equals("nofuture")) {
@@ -208,7 +215,7 @@ public class TopBar extends JPanel implements InformationSource {
             // reaching the head of the timeline, current status is the first
             this.buttonForward.setEnabled(true);
             this.buttonBackward.setEnabled(false);
-        }
+        } 
     }
 
     public class DirectoryButtonListener implements ActionListener {

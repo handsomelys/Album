@@ -15,6 +15,7 @@ import preview.*;
 import tree.*;
 import topbar.*;
 import event.*;
+import operation.DirectoryOperationList;
 
 public class Main {
     File directory;
@@ -23,6 +24,7 @@ public class Main {
     PicPreviewDialog previewFrame;
     JButton previewButton;
     TopBar topbar;
+    DirectoryOperationList dol;
 
     public Main(File directory) {
         // setting the ui to windows default
@@ -39,6 +41,10 @@ public class Main {
         this.previewFrame = new PicPreviewDialog();
         this.previewButton = new JButton("preview");
         this.topbar = new TopBar(directory);
+        this.dol = new DirectoryOperationList();
+
+        // configuring top bar
+        this.topbar.freezeDirectoryButton("init");
 
         // assigning listener
         mainFrame.addWindowListener(new WindowAdapter() {
@@ -58,16 +64,21 @@ public class Main {
             public void actionPerformed(InformationEvent ie) {
                 String command = ie.getCommand();
                 if (command.equals("back")) {
-                    
+                    File f = Main.this.dol.prior();
+                    Main.this.updateDirectory(f);
                 } else if (command.equals("forward")) {
-
+                    File f = Main.this.dol.next();
+                    Main.this.updateDirectory(f);
                 } else if (command.equals("up")) {
                     File parent = Main.this.directory.getParentFile();
-                    if(parent == null) {
-                        topbar.freezeButton("root");
-                    } else {
-                        Main.this.directory = parent;
-                        Main.this.updateDirectory(Main.this.directory);
+                    if(parent == null)
+                        Main.this.topbar.freezeDirectoryButton("root");
+                    else {
+                        if (!Main.this.dol.push(Main.this.directory))
+                            Main.this.topbar.freezeDirectoryButton("nofuture");
+                        else
+                            Main.this.topbar.freezeDirectoryButton("unlock");
+                        Main.this.updateDirectory(parent);
                     }
                 }
             }
@@ -109,10 +120,16 @@ public class Main {
         mainFrame.add(previewButton, gbc);
     }
     public void updateDirectory(File directory) {
+        this.dol.push(this.directory);
+        this.directory = directory;
+        this.topbar.updateDirectory(directory);
+    }
+    public void beforeDirectory(File directory) {
+        this.directory = directory;
         this.topbar.updateDirectory(directory);
     }
     public static void main(String[] args) {
-        File directory = new File("D:\\picture\\sticker\\微博");
+        File directory = new File("D:\\picture\\sticker\\猫");
         new Main(directory);
     }
 }
