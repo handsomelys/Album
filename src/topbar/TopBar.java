@@ -9,13 +9,16 @@ import java.awt.GridBagConstraints;
 import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.HashSet;
 
 import operation.Utils;
-import event.DirectoryUpdatedManager;
+import event.InformationSource;
+import event.InformationEvent;
+import event.InformationListener;
 
-public class TopBar extends JPanel {
+public class TopBar extends JPanel implements InformationSource {
     private static final long serialVersionUID = 1L;
-    
+
     public static final String BACKWARD = "←";
     public static final String FORWARD = "→";
     public static final String UPWARD = "↑";
@@ -30,19 +33,19 @@ public class TopBar extends JPanel {
     public String directorySize;
     public int totalPictureCount;
     public int selectedPictureCount;
+    protected HashSet<InformationListener> listeners;
 
     // containers
     public JPanel container1;
     public JPanel container2;
     public JPanel container3;
-    
+
     // directory operation buttons and address bar
     public JButton buttonBackward;
     public JButton buttonForward;
     public JButton buttonUpward;
     public JLabel addressBar;
-    public DirectoryUpdatedManager dcm;
-    
+
     // informations
     public JLabel directoryTitle;
     public JLabel directoryStats;
@@ -55,9 +58,11 @@ public class TopBar extends JPanel {
 
     /**
      * initializing topbar with a specify directory
+     * 
      * @param directory a directory as form of java.io.File
      */
     public TopBar(File directory) {
+        this.listeners = new HashSet<InformationListener>();
         GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
         this.setBorder(BorderFactory.createEtchedBorder());
@@ -73,12 +78,10 @@ public class TopBar extends JPanel {
         this.container3.setLayout(gbl);
 
         // initializing directory buttons
-        this.dcm = new DirectoryUpdatedManager();
         this.buttonBackward = new JButton(TopBar.BACKWARD);
         this.buttonForward = new JButton(TopBar.FORWARD);
         this.buttonUpward = new JButton(TopBar.UPWARD);
-        DirectoryButtonActionListener dbal = 
-            new DirectoryButtonActionListener(this.dcm);
+        DirectoryButtonListener dbal = new DirectoryButtonListener();
         this.buttonBackward.addActionListener(dbal);
         this.buttonForward.addActionListener(dbal);
         this.buttonUpward.addActionListener(dbal);
@@ -172,6 +175,7 @@ public class TopBar extends JPanel {
         gbc.anchor = GridBagConstraints.WEST;
         this.add(container3, gbc);
     }
+
     public TopBar(String directory) {
         this(new File(directory));
     }
@@ -189,26 +193,52 @@ public class TopBar extends JPanel {
         // update informations
         this.directoryTitle.setText(this.directoryName);
         this.directoryStats.setText(String.format("%d张图片(%s) - 选中%d张图片",
-            this.totalPictureCount,
-            this.directorySize,
+            this.totalPictureCount, this.directorySize,
             this.selectedPictureCount));
     }
-    
-    public class DirectoryButtonActionListener implements ActionListener {
-        public DirectoryUpdatedManager dcm;
-        public DirectoryButtonActionListener(DirectoryUpdatedManager dcm) {
-            this.dcm = dcm;
+    public void freezeButton(String state) {
+        if (state.equals("root")) {
+            // reaching the root level, freezing the up buttons
+            this.buttonUpward.setEnabled(false);
+        } else if (state.equals("nofuture")) {
+            // have done some new actions, current status is the newest
+            this.buttonForward.setEnabled(false);
+            this.buttonBackward.setEnabled(true);
+        } else if (state.equals("nopast")) {
+            // reaching the head of the timeline, current status is the first
+            this.buttonForward.setEnabled(true);
+            this.buttonBackward.setEnabled(false);
         }
+    }
+
+    public class DirectoryButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
             if (command.equals(TopBar.BACKWARD)) {
-                this.dcm.back();
+                TopBar.this.notifyAll(
+                    new InformationEvent(TopBar.this, "back"));
             } else if (command.equals(TopBar.FORWARD)) {
-                this.dcm.forward();
+                TopBar.this.notifyAll(
+                    new InformationEvent(TopBar.this, "forward"));
             } else if (command.equals(TopBar.UPWARD)) {
-                this.dcm.up();
+                TopBar.this.notifyAll(
+                    new InformationEvent(TopBar.this, "up"));
             }
-        }  
+        }
+    }
+
+    @Override
+    public void addListener(InformationListener e) {
+        this.listeners.add(e);
+    }
+    @Override
+    public void removeListener(InformationListener e) {
+        this.listeners.remove(e);
+    }
+    @Override
+    public void notifyAll(InformationEvent ie) {
+        for (InformationListener il: listeners)
+            il.actionPerformed(ie);
     }
 }

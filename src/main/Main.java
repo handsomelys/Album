@@ -16,8 +16,15 @@ import tree.*;
 import topbar.*;
 import event.*;
 
-public class Main{
-    public static void main(String[] args) {
+public class Main {
+    File directory;
+    JFrame mainFrame;
+    DiskTree disktree;
+    PicPreviewDialog previewFrame;
+    JButton previewButton;
+    TopBar topbar;
+
+    public Main(File directory) {
         // setting the ui to windows default
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -26,12 +33,12 @@ public class Main{
         }
 
         // initializing variable
-        File f = new File("D:/picture/sticker");
-        JFrame mainFrame = new JFrame();
-        PicPreviewDialog previewFrame = new PicPreviewDialog();
-        DiskTree disktree = new DiskTree();
-        TopBar topbar = new TopBar(f);
-        JButton previewButton = new JButton("preview");
+        this.directory = directory;
+        this.mainFrame = new JFrame();
+        this.disktree = new DiskTree();
+        this.previewFrame = new PicPreviewDialog();
+        this.previewButton = new JButton("preview");
+        this.topbar = new TopBar(directory);
 
         // assigning listener
         mainFrame.addWindowListener(new WindowAdapter() {
@@ -41,8 +48,28 @@ public class Main{
             }
         });
         previewButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 previewFrame.setVisible(true);
+            }
+        });
+        topbar.addListener(new InformationListener() {
+            @Override
+            public void actionPerformed(InformationEvent ie) {
+                String command = ie.getCommand();
+                if (command.equals("back")) {
+                    
+                } else if (command.equals("forward")) {
+
+                } else if (command.equals("up")) {
+                    File parent = Main.this.directory.getParentFile();
+                    if(parent == null) {
+                        topbar.freezeButton("root");
+                    } else {
+                        Main.this.directory = parent;
+                        Main.this.updateDirectory(Main.this.directory);
+                    }
+                }
             }
         });
         
@@ -80,5 +107,12 @@ public class Main{
         gbc.weightx = 0.5;
         gbc.weighty = 0.9;
         mainFrame.add(previewButton, gbc);
+    }
+    public void updateDirectory(File directory) {
+        this.topbar.updateDirectory(directory);
+    }
+    public static void main(String[] args) {
+        File directory = new File("D:\\picture\\sticker\\微博");
+        new Main(directory);
     }
 }
