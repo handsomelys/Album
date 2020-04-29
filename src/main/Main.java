@@ -10,9 +10,11 @@ import javax.swing.UIManager;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import java.io.File;
+import java.util.ArrayList;
 
 import preview.*;
 import tree.*;
+import viewframe.ViewFrame;
 import topbar.*;
 import event.*;
 import operation.DirectoryOperationList;
@@ -25,6 +27,7 @@ public class Main {
     JButton previewButton;
     TopBar topbar;
     DirectoryOperationList dol;
+    ArrayList<File> selectedPictures;
 
     public Main(File directory) {
         // setting the ui to windows default
@@ -42,6 +45,7 @@ public class Main {
         this.previewButton = new JButton("preview");
         this.topbar = new TopBar(directory);
         this.dol = new DirectoryOperationList();
+        this.selectedPictures = new ArrayList<File>();
 
         // configuring top bar
         this.topbar.freezeDirectoryButton("back");
@@ -142,6 +146,8 @@ public class Main {
     }
     public static void main(String[] args) {
         File directory = new File("D:\\picture\\sticker\\猫");
+        File f = new File("D:\\Picture\\sand sculpture\\696841.gif");
         new Main(directory);
+        new ViewFrame("test", f);
     }
 }

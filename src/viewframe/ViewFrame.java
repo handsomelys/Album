@@ -1,19 +1,13 @@
 package viewframe;
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
 import javax.swing.*;
 import javax.swing.JPanel;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.imageio.ImageIO;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -23,20 +17,15 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.font.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.TimerTask;
 import java.util.Timer;
-import java.util.Calendar;
 
 public class ViewFrame extends JFrame {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
 	private ArrayList<BufferedImage> img;
 	private JPanel jpl;
 	private JButton turn_next;
@@ -45,7 +34,7 @@ public class ViewFrame extends JFrame {
 	private JButton turn_small;
 	private JButton start;
 	private JButton end;
-	private JButton settings;
+	//private JButton settings;
 	private ScrollPane scrollPane;
 	private JPanel bottombtn;
 	private int contentnum=0;
