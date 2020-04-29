@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import javax.swing.JScrollPane;
 
 public class ScrollPane extends JScrollPane {
+	private static final long serialVersionUID = 1L;
 	
-	public int pic_Width=0;
+	public int pic_Width = 0;
 	public int pic_Height=0;
 	public int pic_x;
 	public int pic_y;
