@@ -29,17 +29,8 @@ public class RunTree {
 					}
 				}
 
-				public void treeCollapsed1(TreeExpansionEvent event) {
-				}
-
-				public void treeExpanded1(TreeExpansionEvent event) {
-					// TODO Auto-generated method stub
-					
-				}
-
 				@Override
 				public void treeCollapsed(TreeExpansionEvent event) {
-					// TODO Auto-generated method stub
 					
 				}
 			});

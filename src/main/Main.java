@@ -1,13 +1,12 @@
 package main;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import javax.swing.UIManager;
 import javax.swing.JFrame;
+import javax.swing.JTree;
 import javax.swing.JButton;
 import java.io.File;
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import operation.DirectoryOperationList;
 public class Main {
     File directory;
     JFrame mainFrame;
-    DiskTree disktree;
+    JTree jtree;
     PicPreviewDialog previewFrame;
     JButton previewButton;
     TopBar topbar;
@@ -40,12 +39,13 @@ public class Main {
         // initializing variable
         this.directory = directory;
         this.mainFrame = new JFrame();
-        this.disktree = new DiskTree();
+        this.jtree = new JTree();
         this.previewFrame = new PicPreviewDialog();
         this.previewButton = new JButton("preview");
         this.topbar = new TopBar(directory);
         this.dol = new DirectoryOperationList();
         this.selectedPictures = new ArrayList<File>();
+        RunTree.Runtree(jtree);
 
         // configuring top bar
         this.topbar.freezeDirectoryButton("back");
@@ -53,18 +53,13 @@ public class Main {
         this.dol.push(this.directory);
 
         // assigning listener
-        mainFrame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowActivated(WindowEvent e) {
-                disktree.do_WindowActivated(e);
-            }
-        });
         previewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 previewFrame.setVisible(true);
             }
         });
+
         topbar.addListener(new InformationListener() {
             @Override
             public void actionPerformed(InformationEvent ie) {
@@ -107,7 +102,7 @@ public class Main {
         gbc.gridheight = 2;
         gbc.weightx = 0.5;
         gbc.weighty = 1.0;
-        mainFrame.add(disktree, gbc);
+        mainFrame.add(jtree, gbc);
         // deploying top bar on the above of the right
         gbc.gridx = 1;
         gbc.gridy = 0;

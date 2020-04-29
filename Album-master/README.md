@@ -1,1 +1,0 @@
-![效果图](https://github.com/handsomelys/Album/blob/master/image/效果图.png)

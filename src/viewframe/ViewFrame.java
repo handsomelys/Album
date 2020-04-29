@@ -152,7 +152,6 @@ public class ViewFrame extends JFrame {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
 			if(isDragged==false) {
 				isDragged=true;
 				mousestartx=e.getX();
@@ -164,7 +163,6 @@ public class ViewFrame extends JFrame {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
 			if(isDragged)isDragged=false;
 			if(pic_Height<=scrollPane.getHeight()&&pic_Width<=scrollPane.getWidth()) {
 				int x=scrollPane.getWidth()/2-(pic_Width/2);
@@ -185,7 +183,6 @@ public class ViewFrame extends JFrame {
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			// TODO Auto-generated method stub
 			if(isDragged) {
 				contentxMove=e.getX()-mousestartx;
 				contentyMove=e.getY()-mousestarty;
@@ -212,7 +209,6 @@ public class ViewFrame extends JFrame {
 			opendirectory(p);
 			else openfile(p);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		//打开文件并创建数组
@@ -308,12 +304,12 @@ public class ViewFrame extends JFrame {
     	start=new JButton();
     	end= new JButton();
     	
-    	turn_big.setIcon(new ImageIcon("src/turnbig.png"));
-    	turn_small.setIcon(new ImageIcon("src/turnsmall.png"));
-    	turn_next.setIcon(new ImageIcon("src/turnnext.png"));
-    	turn_back.setIcon(new ImageIcon("src/turnback.png"));
-    	start.setIcon(new ImageIcon("src/start.png"));
-    	end.setIcon(new ImageIcon("src/end.png"));
+    	turn_big.setIcon(new ImageIcon("resource/turnbig.png"));
+    	turn_small.setIcon(new ImageIcon("resource/turnsmall.png"));
+    	turn_next.setIcon(new ImageIcon("resource/turnnext.png"));
+    	turn_back.setIcon(new ImageIcon("resource/turnback.png"));
+    	start.setIcon(new ImageIcon("resource/start.png"));
+    	end.setIcon(new ImageIcon("resource/end.png"));
     	
     	turn_big.setBorder(null);
     	turn_small.setBorder(null);

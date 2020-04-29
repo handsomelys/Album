@@ -14,12 +14,18 @@ import java.net.MalformedURLException;
 
 import javax.swing.border.BevelBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import viewframe.*;
+import java.awt.EventQueue;
+
+
 
 public class PicPreviewDialog extends JFrame {
 	private static final long serialVersionUID = 1L;
-	
+	public File selectedPic;
 	private JPanel contentpane;
 	private PreviewPanel preview;
+	JFileChooser fChooser;
+	
 	public PicPreviewDialog() {
 		setTitle("preview");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,7 +35,7 @@ public class PicPreviewDialog extends JFrame {
 		contentpane.setLayout(new BorderLayout(0,0));
 		setContentPane(contentpane);
 		
-		JFileChooser fChooser = new JFileChooser();
+		fChooser = new JFileChooser();
 		contentpane.add(fChooser,BorderLayout.CENTER);
 		preview = new PreviewPanel();
 		preview.setBorder(new BevelBorder(BevelBorder.LOWERED,null,null,null,null));
@@ -45,8 +51,21 @@ public class PicPreviewDialog extends JFrame {
 	}
 	
 	protected void doPropertyChange(PropertyChangeEvent e) {
+		//if(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY == e.getPropertyName()) {
 		if(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY == e.getPropertyName()) {
 			File pic = (File)e.getNewValue();
+			selectedPic = fChooser.getSelectedFile();
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					if(selectedPic != null) {
+						ViewFrame vf = new ViewFrame("",selectedPic);
+						vf.setVisible(true);
+					}
+					
+				}
+			});
+			
+			
 			if(pic != null && pic.isFile()) {
 				try {
 					Image image = getToolkit().getImage(pic.toURI().toURL());

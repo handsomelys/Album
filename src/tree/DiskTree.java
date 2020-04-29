@@ -18,7 +18,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-
 public class DiskTree extends JPanel {
 	private static final long serialVersionUID = 1L;
 	// TreeCellRenderer 改变JTree的显示方式的接口
@@ -30,6 +29,12 @@ public class DiskTree extends JPanel {
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
 			Object userObject = node.getUserObject();
 			if(!(userObject instanceof File)) {
+				/*
+				String folderName = userObject.toString();
+				int index = folderName.lastIndexOf("\\");
+				String tmpname =  (index != -1 && index != folderName.length() - 1) ? folderName.substring(index + 1) : folderName;
+				return new JLabel(tmpname);
+				*/
 				return new JLabel(userObject.toString());	//返回磁盘名
 			}
 			File folder = (File)userObject;
@@ -120,7 +125,16 @@ public class DiskTree extends JPanel {
 		}
 		File[] files = folder.listFiles();//获取文件夹中的文件列表
 		for(File file:files) {
-			node.add(new DefaultMutableTreeNode(file));
+			if(file.isDirectory()) {
+				
+				String folderName = file.toString();
+				int index = folderName.lastIndexOf("\\");
+				String tmp =  (index != -1 && index != folderName.length() - 1) ? folderName.substring(index + 1) : folderName;
+				File tmpFile = new File(tmp);
+				
+				node.add(new DefaultMutableTreeNode(tmpFile));
+			}
+			
 		}
 	}
 }
