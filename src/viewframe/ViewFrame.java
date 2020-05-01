@@ -2,6 +2,9 @@ package viewframe;
 import javax.swing.JFrame;
 import javax.swing.*;
 import javax.swing.JPanel;
+
+import main.Text;
+
 import javax.swing.JButton;
 import javax.imageio.ImageIO;
 
@@ -213,9 +216,9 @@ public class ViewFrame extends JFrame {
 			e1.printStackTrace();
 		}
 		//打开文件并创建数组
-		this.setTitle("kkp图片浏览");
+		this.setTitle(s+" - "+Text.SOFTWARENAME);
 		this.setFont(new Font("宋体",Font.PLAIN,20));
-		this.setSize(1920,1080-40);
+		this.setSize(800, 600);
 		//this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setLocationRelativeTo(null);
         this.setLayout(null);

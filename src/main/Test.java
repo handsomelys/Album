@@ -1,12 +1,12 @@
 package main;
 
-import java.io.File;
+// import java.io.File;
 
 public class Test {
-    public static void main(String[] args) {
-        File f = new File("D:\\picture");
-        System.out.println(f.isDirectory());
-        System.out.println(f.getPath());
-        System.out.println(f.getParentFile());
-    }
+    // public static void main(String[] args) {
+    //     File file = new File("image");
+    //     for (File f: file.listFiles()) {
+    //         System.out.println(f.getName());
+    //     }
+    // }
 }
