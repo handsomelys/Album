@@ -22,7 +22,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.TimerTask;
 import java.util.Timer;
-
+import main.Main;
 public class ViewFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
@@ -46,6 +46,7 @@ public class ViewFrame extends JFrame {
 	private boolean isDragged=false;
 	private int mousestartx,mousestarty;
 	private int nowScrollx,nowScrolly;
+	private int shownow=0;
 	private TimerTask task_autoShow=new TimerTask() {
 		public void run(){
 			drawnext();
@@ -198,12 +199,12 @@ public class ViewFrame extends JFrame {
 	};
 	
 	
-	public ViewFrame(String s,File p) {
+	public ViewFrame(String s,File p,int shownow) {
 		super(s);
 		
 		img=new ArrayList<BufferedImage>();
 		
-		
+		this.shownow=shownow;
 		try {
 			if(p.isDirectory())
 			opendirectory(p);
@@ -259,7 +260,17 @@ public class ViewFrame extends JFrame {
 		jpl.add(bottombtn);
 		this.setMinimumSize(new Dimension(430,0));
 		this.setContentPane(jpl);
-		this.addComponentListener(componentAdapter);   //添加自动调节
+		this.addComponentListener(componentAdapter);
+		//添加自动调节
+		if(shownow==1) {
+			autoShow=new Timer();
+			task_autoShow=new TimerTask() {
+				public void run(){
+					drawnext();
+				}
+			};
+			autoShow.schedule(task_autoShow, 1000,3000);
+		}
 		this.setVisible(true);
 		
 	}
@@ -304,12 +315,12 @@ public class ViewFrame extends JFrame {
     	start=new JButton();
     	end= new JButton();
     	
-    	turn_big.setIcon(new ImageIcon("resource/turnbig.png"));
-    	turn_small.setIcon(new ImageIcon("resource/turnsmall.png"));
-    	turn_next.setIcon(new ImageIcon("resource/turnnext.png"));
-    	turn_back.setIcon(new ImageIcon("resource/turnback.png"));
-    	start.setIcon(new ImageIcon("resource/start.png"));
-    	end.setIcon(new ImageIcon("resource/end.png"));
+    	turn_big.setIcon(new ImageIcon(Main.class.getResource("/resource/turnbig.png")));
+    	turn_small.setIcon(new ImageIcon(Main.class.getResource("/resource/turnsmall.png")));
+    	turn_next.setIcon(new ImageIcon(Main.class.getResource("/resource/turnnext.png")));
+    	turn_back.setIcon(new ImageIcon(Main.class.getResource("/resource/turnback.png")));
+    	start.setIcon(new ImageIcon(Main.class.getResource("/resource/start.png")));
+    	end.setIcon(new ImageIcon(Main.class.getResource("/resource/end.png")));
     	
     	turn_big.setBorder(null);
     	turn_small.setBorder(null);

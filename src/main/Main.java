@@ -140,9 +140,9 @@ public class Main {
             this.topbar.unlockDirectoryButton("forward");
     }
     public static void main(String[] args) {
-        File directory = new File("D:\\picture\\sticker\\猫");
-        File f = new File("D:\\Picture\\sand sculpture\\696841.gif");
-        new Main(directory);
-        new ViewFrame("test", f);
+        File directory = new File("F:\\图片啦");
+        File f = new File("F:\\图片啦");
+        //new Main(directory);
+        new ViewFrame("test", f,1);
     }
 }
