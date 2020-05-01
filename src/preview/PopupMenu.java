@@ -47,7 +47,7 @@ public class PopupMenu extends JPopupMenu implements CommandSource {
         this.add(this.copy);
         this.add(this.paste);
         this.addSeparator();
-        this.add(this.remove);
+        this.add(this.rename);
         this.add(this.remove);
     }
 
