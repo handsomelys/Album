@@ -33,7 +33,7 @@ public class Main {
 
     public Main(File directory) {
         // initializing variable
-        this.directory = directory;
+        MainListener ml = new MainListener();
         this.mainFrame = new JFrame();
         this.tree = new DiskTree();
         this.previewPanel = new JPanel();
@@ -41,7 +41,7 @@ public class Main {
         this.topbar = new TopBar(directory);
         this.dol = new DirectoryOperationList();
         this.selectedPictures = new ArrayList<File>();
-        MainListener ml = new MainListener();
+        this.updateDirectory(directory);
 
         // configuring top bar
         this.configureDirectoryButtons();
@@ -90,18 +90,24 @@ public class Main {
         gbc.weighty = 9;
         mainFrame.add(previewPanel, gbc);
     }
+
     public void updateDirectory(File directory) {
         if (directory.isDirectory()) {
-            this.directory = directory;
+            this.directory = directory.getAbsoluteFile();
             this.topbar.setSelectedPicturesCount(this.selectedPictures.size());
             this.topbar.updateDirectory(directory);
         }
     }
+    public void updateDirectory() {
+        updateDirectory(this.directory);
+    }
     public void configureDirectoryButtons() {
         File parent = Main.this.directory.getParentFile();
         if(parent == null)
-            Main.this.topbar.freezeButton("up");
-        
+            this.topbar.freezeButton("up");
+        else
+            this.topbar.unlockButton("up");
+
         if (this.dol.getPrior() == null)
             this.topbar.freezeButton("back");
         else
@@ -153,19 +159,28 @@ public class Main {
                 }
             } else if (command[0].equals("switch")) {
                 File dest = new File(command[1]);
-                Main.this.updateDirectory(dest);
-                Main.this.configureFileOperationButtons();
+                if (dest != null) {
+                    Main.this.updateDirectory(dest);
+                    Main.this.dol.push(Main.this.directory);
+                    Main.this.configureDirectoryButtons();
+                }
             } else if (command[0].equals("open")) {
                 for (File f: Main.this.selectedPictures)
-                    new ViewFrame(f.getName(), f);
+                    new ViewFrame(f.getName(), f, 0);
             } else if (command[0].equals("slideshow")) {
-                // TODO: add slideshow
+                new ViewFrame(
+                    Main.this.directory.getName()+" - "+Text.SLIDESHOW,
+                    Main.this.directory,
+                    1);
             } else if (command[0].equals("remove")) {
                 int result = JOptionPane.showConfirmDialog(Main.this.mainFrame,
                     Text.CONFIRMREMOVE, Text.CONFIRMREMOVETITLE, 0);
-                if (result == 0)
-                    for (File f: Main.this.selectedPictures)
-                        FileUtils.removeFile(f);
+                if (result == 0) {
+                    FileUtils.removeFiles(Main.this.selectedPictures);
+                    Main.this.selectedPictures.clear();
+                    Main.this.updateDirectory();
+                    Main.this.configureFileOperationButtons();
+                }
             } else if (command[0].equals("copy")) {   
                 if (Main.this.selectedPictures != null &&
                     Main.this.selectedPictures.size() != 0) {
@@ -176,7 +191,8 @@ public class Main {
                 FileUtils.copyFiles(Main.this.heldPictures,
                     Main.this.directory.getAbsolutePath());
             } else if (command[0].equals("rename")) {
-                
+                JOptionPane.showMessageDialog(Main.this.mainFrame,
+                    "This feature is currently no available.", "tips", 1);
             }
         }
     }
@@ -207,6 +223,5 @@ public class Main {
         m.selectedPictures.add(f1);
         m.updateDirectory(m.directory);
         m.configureFileOperationButtons();
-        new ViewFrame(f1.getName(), f1);
     }
 }

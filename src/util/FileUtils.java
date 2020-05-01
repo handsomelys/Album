@@ -58,8 +58,8 @@ public class FileUtils {
      * @param dest the desination path
      */
     public static void copyFiles(ArrayList<File> files, String dest) {
-        for (File f: files) {
-            FileUtils.copyFile(f, dest);
+        for (File file: files) {
+            FileUtils.copyFile(file, dest);
         }
     }
 
@@ -98,7 +98,16 @@ public class FileUtils {
         if (file.exists() && file.isFile())
             file.delete();
     }
-
+    /**
+     * @param files files to delete
+     */
+    public static void removeFiles(ArrayList<File> files) {
+        for (File file: files)
+            FileUtils.removeFile(file);
+    }
+    /**
+     * obvious
+     */
     public static boolean isPicture(File f) {
         String regex = ".*.(jpg|jpeg|png|bmp|gif)$";
         Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
