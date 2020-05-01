@@ -223,7 +223,7 @@ public class TopBar extends JPanel implements InformationSource {
                     new InformationEvent(TopBar.this, "forward"));
             } else if (command.equals(TopBar.UPWARD)) {
                 TopBar.this.notifyAll(
-                    new InformationEvent(TopBar.this, "up"));
+                    new InformationEvent(TopBar.this, "parent"));
             } else if (command.equals(TopBar.OPEN)) {
                 TopBar.this.notifyAll(
                     new InformationEvent(TopBar.this, "open"));

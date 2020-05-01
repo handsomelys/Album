@@ -2,13 +2,11 @@ package main;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import javax.swing.UIManager;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTree;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -23,7 +21,7 @@ import operation.DirectoryOperationList;
 public class Main {
     File directory;
     JFrame mainFrame;
-    JTree jtree;
+    DiskTree tree;
     JPanel previewPanel;
     PopupMenu popupMenu;
     TopBar topbar;
@@ -34,13 +32,13 @@ public class Main {
         // initializing variable
         this.directory = directory;
         this.mainFrame = new JFrame();
-        this.jtree = new JTree();
+        this.tree = new DiskTree();
         this.previewPanel = new JPanel();
         this.popupMenu = new PopupMenu();
         this.topbar = new TopBar(directory);
         this.dol = new DirectoryOperationList();
         this.selectedPictures = new ArrayList<File>();
-        RunTree.Runtree(jtree);
+        MainListener ml = new MainListener();
 
         // configuring top bar
         this.topbar.freezeDirectoryButton("back");
@@ -48,8 +46,9 @@ public class Main {
         this.dol.push(this.directory);
 
         // assigning listener
-        this.topbar.addListener(new TopBarListener());
+        this.topbar.addListener(ml);
         this.previewPanel.addMouseListener(new PopupMenuListener());
+        this.tree.addListener(ml);
         
         // initializing the main frame
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -68,7 +67,7 @@ public class Main {
         gbc.gridheight = 2;
         gbc.weightx = 0.5;
         gbc.weighty = 1.0;
-        mainFrame.add(jtree, gbc);
+        mainFrame.add(tree, gbc);
         // deploying top bar on the above of the right
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -87,8 +86,10 @@ public class Main {
         mainFrame.add(previewPanel, gbc);
     }
     public void updateDirectory(File directory) {
-        this.directory = directory;
-        this.topbar.updateDirectory(directory);
+        if (directory.isDirectory()) {
+            this.directory = directory;
+            this.topbar.updateDirectory(directory);
+        }
     }
     public void configureDirectoryButtons() {
         File parent = Main.this.directory.getParentFile();
@@ -105,33 +106,36 @@ public class Main {
         else
             this.topbar.unlockDirectoryButton("forward");
     }
-    public class TopBarListener implements InformationListener {
+    public class MainListener implements InformationListener {
         @Override
         public void actionPerformed(InformationEvent ie) {
-            String command = ie.getCommand();
-            if (command.equals("back")) {
+            String[] command = ie.getCommand();
+            if (command[0].equals("back")) {
                 File prior = Main.this.dol.getPrior();
                 if (prior != null)
                     Main.this.updateDirectory(prior);
                 Main.this.dol.rewind();
                 configureDirectoryButtons();
-            } else if (command.equals("forward")) {
+            } else if (command[0].equals("forward")) {
                 File next = Main.this.dol.getNext();
                 if (next != null)
                     Main.this.updateDirectory(next);
                 Main.this.dol.push(next);
                 configureDirectoryButtons();
-            } else if (command.equals("up")) {
+            } else if (command[0].equals("parent")) {
                 File parent = Main.this.directory.getParentFile();
                 if (parent != null) {
                     Main.this.updateDirectory(parent);
                     Main.this.dol.push(Main.this.directory);
                     configureDirectoryButtons();
                 }
-            } else if (command.equals("open")) {
+            } else if (command[0].equals("switch")) {
+                File dest = new File(command[1]);
+                Main.this.updateDirectory(dest);
+            } else if (command[0].equals("open")) {
                 for (File f: Main.this.selectedPictures)
                     new ViewFrame(f.getName(), f);
-            } else if (command.equals("remove")) {
+            } else if (command[0].equals("remove")) {
                 for (File f: Main.this.selectedPictures)
                     FileUtils.removeFile(f);
             }
@@ -148,7 +152,6 @@ public class Main {
         }
         private void showPopupMenu(MouseEvent e) {
             if(e.isPopupTrigger()){
-                //如果当前事件与鼠标事件相关，则弹出菜单
                 Main.this.popupMenu.show(e.getComponent(),e.getX(),e.getY());
             }
         }
