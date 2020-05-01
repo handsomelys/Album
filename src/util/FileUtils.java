@@ -2,6 +2,7 @@ package util;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,10 +14,41 @@ public class FileUtils {
      * @param dest the desination path
      */
     public static void copyFile(File file, String dest) {
+        String reg = "-copy(\\((\\d+)\\))?";
+        Pattern p = Pattern.compile(reg);
+        String name = file.getName();
+        File nf = Path.of(dest, name).toFile();
+        // getting an unique name for copied file
+        while (true) {
+            if(nf.exists()) {
+                Matcher m = p.matcher(name);
+                if(m.find()) {
+                    // had found the copied format inside file name
+                    if (m.group(2) != null) {
+                        int c = Integer.parseInt(m.group(2));
+                        name = m.replaceFirst(String.format("-copy(%d)", c+1));
+                    } else {
+                        name = m.replaceFirst("-copy(1)");
+                    }
+                }
+                else {
+                    // did not find the copied format, adding it
+                    if ((name != null) && (name.length() > 0)) {
+                        int dot = name.lastIndexOf('.');
+                        if (dot > 0 && dot < (name.length()-1)) {
+                            String s = name.substring(0, dot);
+                            name = s + "-copy." + name.substring(dot+1);
+                        } else
+                            name += "-copy";
+                    }
+                }
+                nf = Path.of(dest, name).toFile();
+                continue;
+            }
+            break;
+        }
         try {
-            File nf = Path.of(dest, file.getName()).toFile();
-            if(!nf.exists())
-                Files.copy(file.toPath(), nf.toPath());
+            Files.copy(file.toPath(), nf.toPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,6 +90,10 @@ public class FileUtils {
                     name + String.format("%0"+bit+"d", i) + suffix);
             }
     }
+
+    /**
+     * @param file file to delete
+     */
     public static void removeFile(File file) {
         if (file.exists() && file.isFile())
             file.delete();

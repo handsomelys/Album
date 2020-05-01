@@ -6,33 +6,28 @@ import javax.swing.JButton;
 import javax.swing.BorderFactory;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-import java.awt.event.*;
 import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
 import java.io.File;
 import java.util.HashSet;
 
 import util.FileUtils;
-import event.InformationSource;
-import event.InformationEvent;
-import event.InformationListener;
+import event.CommandSource;
+import event.CommandEvent;
+import event.CommandListener;
+import main.Text;
 
-public class TopBar extends JPanel implements InformationSource {
+public class TopBar extends JPanel implements CommandSource {
     private static final long serialVersionUID = 1L;
-
-    public static final String BACKWARD = "←";
-    public static final String FORWARD = "→";
-    public static final String UPWARD = "↑";
-    public static final String OPEN = "打开";
-    public static final String REMOVE = "删除";
-    public static final String SLIDESHOW = "幻灯片";
 
     // general variable
     public File directory;
     public String directoryName;
     public String directorySize;
     public int totalPictureCount;
-    public int selectedPictureCount;
-    protected HashSet<InformationListener> listeners;
+    public int selectedPicturesCount;
+    protected HashSet<CommandListener> listeners;
 
     // containers
     public JPanel container1;
@@ -61,7 +56,9 @@ public class TopBar extends JPanel implements InformationSource {
      */
     public TopBar(File directory) {
         // initializing variable
-        this.listeners = new HashSet<InformationListener>();
+        this.listeners = new HashSet<CommandListener>();
+        this.totalPictureCount = 0;
+        this.selectedPicturesCount = 0;
         ButtonListener bl = new ButtonListener();
         GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
@@ -78,9 +75,9 @@ public class TopBar extends JPanel implements InformationSource {
         this.container3.setLayout(gbl);
 
         // initializing directory buttons
-        this.buttonBackward = new JButton(TopBar.BACKWARD);
-        this.buttonForward = new JButton(TopBar.FORWARD);
-        this.buttonUpward = new JButton(TopBar.UPWARD);
+        this.buttonBackward = new JButton(Text.BACKWARD);
+        this.buttonForward = new JButton(Text.FORWARD);
+        this.buttonUpward = new JButton(Text.UPWARD);
         this.buttonBackward.addActionListener(bl);
         this.buttonForward.addActionListener(bl);
         this.buttonUpward.addActionListener(bl);
@@ -94,9 +91,9 @@ public class TopBar extends JPanel implements InformationSource {
         this.directoryStats = new JLabel("directory stats");
 
         // initializing operation buttons
-        this.buttonOpen = new JButton(TopBar.OPEN);
-        this.buttonRemove = new JButton(TopBar.REMOVE);
-        this.buttonSlideShow = new JButton(TopBar.SLIDESHOW);
+        this.buttonOpen = new JButton(Text.OPEN);
+        this.buttonRemove = new JButton(Text.REMOVE);
+        this.buttonSlideShow = new JButton(Text.SLIDESHOW);
         this.buttonOpen.addActionListener(bl);
         this.buttonRemove.addActionListener(bl);
         this.buttonSlideShow.addActionListener(bl);
@@ -178,6 +175,10 @@ public class TopBar extends JPanel implements InformationSource {
         this(new File(directory));
     }
 
+    public void setSelectedPicturesCount(int count) {
+        this.selectedPicturesCount = count;
+    }
+
     public void updateDirectory(File directory) {
         // update the built in directory variable
         this.directory = directory;
@@ -185,69 +186,81 @@ public class TopBar extends JPanel implements InformationSource {
         this.directorySize = FileUtils.sizeToString(
             FileUtils.getPicturesSize(directory));
         this.totalPictureCount = FileUtils.getPicturesCount(directory);
-        this.selectedPictureCount = 0;
         // update address bar
         this.addressBar.setText(this.directory.getAbsolutePath());
         // update informations
         this.directoryTitle.setText(this.directoryName);
         this.directoryStats.setText(String.format("%d张图片(%s) - 选中%d张图片",
             this.totalPictureCount, this.directorySize,
-            this.selectedPictureCount));
+            this.selectedPicturesCount));
     }
-    public void freezeDirectoryButton(String type) {
+
+    public void freezeButton(String type) {
         if (type.equals("back"))
             this.buttonBackward.setEnabled(false);
         else if (type.equals("forward"))
             this.buttonForward.setEnabled(false);
         else if (type.equals("up"))
             this.buttonUpward.setEnabled(false);
+        else if (type.equals("open"))
+            this.buttonOpen.setEnabled(false);
+        else if (type.equals("remove"))
+            this.buttonRemove.setEnabled(false);
+        else if (type.equals("slideshow"))
+            this.buttonSlideShow.setEnabled(false);
     }
-    public void unlockDirectoryButton(String type) {
+    public void unlockButton(String type) {
         if (type.equals("back"))
             this.buttonBackward.setEnabled(true);
         else if (type.equals("forward"))
             this.buttonForward.setEnabled(true);
         else if (type.equals("up"))
             this.buttonUpward.setEnabled(true);
+        else if (type.equals("open"))
+            this.buttonOpen.setEnabled(true);
+        else if (type.equals("remove"))
+            this.buttonRemove.setEnabled(true);
+        else if (type.equals("slideshow"))
+            this.buttonSlideShow.setEnabled(true);
     }
 
     public class ButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
-            if (command.equals(TopBar.BACKWARD)) {
+            if (command.equals(Text.BACKWARD)) {
                 TopBar.this.notifyAll(
-                    new InformationEvent(TopBar.this, "back"));
-            } else if (command.equals(TopBar.FORWARD)) {
+                    new CommandEvent(TopBar.this, "back"));
+            } else if (command.equals(Text.FORWARD)) {
                 TopBar.this.notifyAll(
-                    new InformationEvent(TopBar.this, "forward"));
-            } else if (command.equals(TopBar.UPWARD)) {
+                    new CommandEvent(TopBar.this, "forward"));
+            } else if (command.equals(Text.UPWARD)) {
                 TopBar.this.notifyAll(
-                    new InformationEvent(TopBar.this, "parent"));
-            } else if (command.equals(TopBar.OPEN)) {
+                    new CommandEvent(TopBar.this, "parent"));
+            } else if (command.equals(Text.OPEN)) {
                 TopBar.this.notifyAll(
-                    new InformationEvent(TopBar.this, "open"));
-            } else if (command.equals(TopBar.REMOVE)) {
+                    new CommandEvent(TopBar.this, "open"));
+            } else if (command.equals(Text.REMOVE)) {
                 TopBar.this.notifyAll(
-                    new InformationEvent(TopBar.this, "remove"));
-            } else if (command.equals(TopBar.SLIDESHOW)) {
+                    new CommandEvent(TopBar.this, "remove"));
+            } else if (command.equals(Text.SLIDESHOW)) {
                 TopBar.this.notifyAll(
-                    new InformationEvent(TopBar.this, "slide"));
+                    new CommandEvent(TopBar.this, "slide"));
             }
         }
     }
 
     @Override
-    public void addListener(InformationListener e) {
-        this.listeners.add(e);
+    public void addListener(CommandListener cl) {
+        this.listeners.add(cl);
     }
     @Override
-    public void removeListener(InformationListener e) {
-        this.listeners.remove(e);
+    public void removeListener(CommandListener cl) {
+        this.listeners.remove(cl);
     }
     @Override
-    public void notifyAll(InformationEvent ie) {
-        for (InformationListener il: listeners)
-            il.actionPerformed(ie);
+    public void notifyAll(CommandEvent ce) {
+        for (CommandListener cl: listeners)
+            cl.actionPerformed(ce);
     }
 }

@@ -9,22 +9,22 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import event.InformationEvent;
-import event.InformationListener;
-import event.InformationSource;
+import event.CommandEvent;
+import event.CommandListener;
+import event.CommandSource;
 
-public class DiskTree extends JTree implements InformationSource {
+public class DiskTree extends JTree implements CommandSource {
     private static final long serialVersionUID = 1L;
 
-    private ArrayList<InformationListener> listeners;
+    private ArrayList<CommandListener> listeners;
 
     public DiskTree() {
-        this.listeners = new ArrayList<InformationListener>();
+        this.listeners = new ArrayList<CommandListener>();
         File[] roots = (new PFileSysView()).getRoots();
-        FileNode nod = null;
-        nod = new FileNode(roots[0]);
-        nod.explore();
-        this.setModel(new DefaultTreeModel(nod));
+        FileNode node = null;
+        node = new FileNode(roots[0]);
+        node.explore();
+        this.setModel(new DefaultTreeModel(node));
         this.addTreeExpansionListener(new DiskTreeExpansionListener());
     }
 
@@ -38,7 +38,7 @@ public class DiskTree extends JTree implements InformationSource {
                 node.explore();
                 model.nodeStructureChanged(node);
             }
-            DiskTree.this.notifyAll(new InformationEvent(DiskTree.this,
+            DiskTree.this.notifyAll(new CommandEvent(DiskTree.this,
                 "switch", node.getString()));
         }
         @Override
@@ -48,16 +48,16 @@ public class DiskTree extends JTree implements InformationSource {
     }
 
     @Override
-    public void addListener(InformationListener e) {
-        this.listeners.add(e);
+    public void addListener(CommandListener cl) {
+        this.listeners.add(cl);
     }
     @Override
-    public void removeListener(InformationListener e) {
-        this.listeners.remove(e);
+    public void removeListener(CommandListener cl) {
+        this.listeners.remove(cl);
     }
     @Override
-    public void notifyAll(InformationEvent ie) {
-        for (InformationListener il: listeners)
-            il.actionPerformed(ie);
+    public void notifyAll(CommandEvent ce) {
+        for (CommandListener cl: listeners)
+            cl.actionPerformed(ce);
     }
 }
