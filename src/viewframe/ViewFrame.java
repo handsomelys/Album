@@ -49,7 +49,7 @@ public class ViewFrame extends JFrame {
 	private boolean isDragged=false;
 	private int mousestartx,mousestarty;
 	private int nowScrollx,nowScrolly;
-	private int shownow=0;
+	private int shownow;
 	private TimerTask task_autoShow=new TimerTask() {
 		public void run(){
 			drawnext();
@@ -265,7 +265,7 @@ public class ViewFrame extends JFrame {
 		this.setContentPane(jpl);
 		this.addComponentListener(componentAdapter);
 		//添加自动调节
-		if(shownow==1) {
+		if(this.shownow==1) {
 			autoShow=new Timer();
 			task_autoShow=new TimerTask() {
 				public void run(){

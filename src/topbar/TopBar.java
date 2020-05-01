@@ -181,7 +181,7 @@ public class TopBar extends JPanel implements CommandSource {
 
     public void updateDirectory(File directory) {
         // update the built in directory variable
-        this.directory = directory;
+        this.directory = directory.getAbsoluteFile();
         this.directoryName = this.directory.getName();
         this.directorySize = FileUtils.sizeToString(
             FileUtils.getPicturesSize(directory));
