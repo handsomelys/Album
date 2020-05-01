@@ -23,8 +23,7 @@ public class TopBar extends JPanel implements InformationSource {
     public static final String FORWARD = "→";
     public static final String UPWARD = "↑";
     public static final String OPEN = "打开";
-    public static final String UNDO = "撤销";
-    public static final String REDO = "重做";
+    public static final String REMOVE = "删除";
     public static final String SLIDESHOW = "幻灯片";
 
     // general variable
@@ -51,10 +50,9 @@ public class TopBar extends JPanel implements InformationSource {
     public JLabel directoryStats;
 
     // operation buttons
-    public JButton open;
-    public JButton undo;
-    public JButton redo;
-    public JButton slideShow;
+    public JButton buttonOpen;
+    public JButton buttonRemove;
+    public JButton buttonSlideShow;
 
     /**
      * initializing topbar with a specify directory
@@ -62,7 +60,9 @@ public class TopBar extends JPanel implements InformationSource {
      * @param directory a directory as form of java.io.File
      */
     public TopBar(File directory) {
+        // initializing variable
         this.listeners = new HashSet<InformationListener>();
+        ButtonListener bl = new ButtonListener();
         GridBagLayout gbl = new GridBagLayout();
         GridBagConstraints gbc = new GridBagConstraints();
         this.setBorder(BorderFactory.createEtchedBorder());
@@ -81,10 +81,9 @@ public class TopBar extends JPanel implements InformationSource {
         this.buttonBackward = new JButton(TopBar.BACKWARD);
         this.buttonForward = new JButton(TopBar.FORWARD);
         this.buttonUpward = new JButton(TopBar.UPWARD);
-        DirectoryButtonListener dbl = new DirectoryButtonListener();
-        this.buttonBackward.addActionListener(dbl);
-        this.buttonForward.addActionListener(dbl);
-        this.buttonUpward.addActionListener(dbl);
+        this.buttonBackward.addActionListener(bl);
+        this.buttonForward.addActionListener(bl);
+        this.buttonUpward.addActionListener(bl);
 
         // initializing address bar
         this.addressBar = new JLabel("address");
@@ -95,10 +94,12 @@ public class TopBar extends JPanel implements InformationSource {
         this.directoryStats = new JLabel("directory stats");
 
         // initializing operation buttons
-        this.open = new JButton(TopBar.OPEN);
-        this.undo = new JButton(TopBar.UNDO);
-        this.redo = new JButton(TopBar.REDO);
-        this.slideShow = new JButton(TopBar.SLIDESHOW);
+        this.buttonOpen = new JButton(TopBar.OPEN);
+        this.buttonRemove = new JButton(TopBar.REMOVE);
+        this.buttonSlideShow = new JButton(TopBar.SLIDESHOW);
+        this.buttonOpen.addActionListener(bl);
+        this.buttonRemove.addActionListener(bl);
+        this.buttonSlideShow.addActionListener(bl);
 
         updateDirectory(directory);
 
@@ -145,13 +146,11 @@ public class TopBar extends JPanel implements InformationSource {
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER;
-        this.container3.add(this.open, gbc);
+        this.container3.add(this.buttonOpen, gbc);
         gbc.gridx = 1;
-        this.container3.add(this.redo, gbc);
+        this.container3.add(this.buttonRemove, gbc);
         gbc.gridx = 2;
-        this.container3.add(this.undo, gbc);
-        gbc.gridx = 3;
-        this.container3.add(this.slideShow, gbc);
+        this.container3.add(this.buttonSlideShow, gbc);
 
         // put containers on the topbar
         gbc.gridx = 0;
@@ -212,7 +211,7 @@ public class TopBar extends JPanel implements InformationSource {
             this.buttonUpward.setEnabled(true);
     }
 
-    public class DirectoryButtonListener implements ActionListener {
+    public class ButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
@@ -225,6 +224,15 @@ public class TopBar extends JPanel implements InformationSource {
             } else if (command.equals(TopBar.UPWARD)) {
                 TopBar.this.notifyAll(
                     new InformationEvent(TopBar.this, "up"));
+            } else if (command.equals(TopBar.OPEN)) {
+                TopBar.this.notifyAll(
+                    new InformationEvent(TopBar.this, "open"));
+            } else if (command.equals(TopBar.REMOVE)) {
+                TopBar.this.notifyAll(
+                    new InformationEvent(TopBar.this, "remove"));
+            } else if (command.equals(TopBar.SLIDESHOW)) {
+                TopBar.this.notifyAll(
+                    new InformationEvent(TopBar.this, "slide"));
             }
         }
     }

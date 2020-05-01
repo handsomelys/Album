@@ -1,8 +1,9 @@
 package dialog;
 
-import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
-public class Rename extends JFrame {
+public class Rename extends JOptionPane {
     private static final long serialVersionUID = 1L;
+
 
 }
