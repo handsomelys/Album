@@ -55,9 +55,10 @@ public class Main {
         this.popupMenu.addListener(ml);
         
         // initializing the main frame
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setBounds(100, 100, 800, 600);
+        mainFrame.setTitle(Text.SOFTWARENAME);
         mainFrame.setLayout(new GridBagLayout());
+        mainFrame.setBounds(100, 100, 800, 600);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setVisible(true);
 
         // deploying the component
@@ -200,10 +201,12 @@ public class Main {
         } catch(Throwable e) {
             e.printStackTrace();
         }
-        File d = new File("C:\\Users\\lsn\\Desktop\\New folder\\test\\");
-        File f1 = new File(d, "5d31db8dc9cb3.jpg");
-        //File f2 = new File(d, "The Starry Night.png");
+        File d = new File("image");
+        File f1 = new File(d, "gugugu.jpg");
         Main m = new Main(d);
         m.selectedPictures.add(f1);
+        m.updateDirectory(m.directory);
+        m.configureFileOperationButtons();
+        new ViewFrame(f1.getName(), f1);
     }
 }

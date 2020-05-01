@@ -1,6 +1,7 @@
 package main;
 
 public class Text {
+    public static final String SOFTWARENAME = "看看图";
     public static final String BACKWARD = "←";
     public static final String FORWARD = "→";
     public static final String UPWARD = "↑";

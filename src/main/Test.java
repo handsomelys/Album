@@ -4,11 +4,9 @@ package main;
 
 public class Test {
     // public static void main(String[] args) {
-    //     File f = new File("C:\\Users\\lsn\\Desktop");
-    //     for (File ff: f.listFiles()) {
-    //         //System.out.println("------------------");
-    //         System.out.println(ff.getName());
-    //         //System.out.println(ff.isDirectory());
+    //     File file = new File("image");
+    //     for (File f: file.listFiles()) {
+    //         System.out.println(f.getName());
     //     }
     // }
 }
