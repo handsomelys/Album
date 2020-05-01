@@ -245,7 +245,7 @@ public class TopBar extends JPanel implements CommandSource {
                     new CommandEvent(TopBar.this, "remove"));
             } else if (command.equals(Text.SLIDESHOW)) {
                 TopBar.this.notifyAll(
-                    new CommandEvent(TopBar.this, "slide"));
+                    new CommandEvent(TopBar.this, "slideshow"));
             }
         }
     }

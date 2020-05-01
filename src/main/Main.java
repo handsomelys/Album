@@ -154,12 +154,15 @@ public class Main {
             } else if (command[0].equals("switch")) {
                 File dest = new File(command[1]);
                 Main.this.updateDirectory(dest);
+                Main.this.configureDirectoryButtons();
                 Main.this.configureFileOperationButtons();
             } else if (command[0].equals("open")) {
                 for (File f: Main.this.selectedPictures)
                     new ViewFrame(f.getName(), f);
             } else if (command[0].equals("slideshow")) {
                 // TODO: add slideshow
+                JOptionPane.showMessageDialog(Main.this.mainFrame,
+                    "This feature is currently no available.", "tips", 1);
             } else if (command[0].equals("remove")) {
                 int result = JOptionPane.showConfirmDialog(Main.this.mainFrame,
                     Text.CONFIRMREMOVE, Text.CONFIRMREMOVETITLE, 0);
@@ -207,6 +210,5 @@ public class Main {
         m.selectedPictures.add(f1);
         m.updateDirectory(m.directory);
         m.configureFileOperationButtons();
-        new ViewFrame(f1.getName(), f1);
     }
 }
