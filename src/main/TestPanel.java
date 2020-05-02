@@ -5,10 +5,10 @@ import java.awt.Image;
 import java.io.File;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public class TestPanel extends JPanel{
+	private static final long serialVersionUID = 1L;
 	
 	Image image = null;
 	public void paint(Graphics g) {

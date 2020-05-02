@@ -181,7 +181,7 @@ public class TopBar extends JPanel implements CommandSource {
 
     public void updateDirectory(File directory) {
         // update the built in directory variable
-        this.directory = directory.getAbsoluteFile();
+        this.directory = directory;
         this.directoryName = this.directory.getName();
         this.directorySize = FileUtils.sizeToString(
             FileUtils.getPicturesSize(directory));
@@ -249,7 +249,7 @@ public class TopBar extends JPanel implements CommandSource {
             }
         }
     }
-
+    // event source method
     @Override
     public void addListener(CommandListener cl) {
         this.listeners.add(cl);

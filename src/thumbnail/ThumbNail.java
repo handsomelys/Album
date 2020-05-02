@@ -77,6 +77,10 @@ public class ThumbNail {
 		}
 		System.out.println("filepath"+filepath);
 		
+
+
+
+		
 		File [] files = node.getAbFile().listFiles();
 		
 		for(int indexOfFiles = 0;indexOfFiles<files.length;indexOfFiles++) {
