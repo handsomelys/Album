@@ -8,6 +8,8 @@ import javax.swing.UIManager;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -30,7 +32,7 @@ public class Main {
     DirectoryOperationList dol;
     ArrayList<File> selectedPictures;
     ArrayList<File> heldPictures;
-
+    JScrollPane treepane;
     public Main(File directory) {
         // initializing variable
         MainListener ml = new MainListener();
@@ -72,7 +74,8 @@ public class Main {
         gbc.gridheight = 2;
         gbc.weightx = 4;
         gbc.weighty = 10;
-        mainFrame.add(tree, gbc);
+        treepane = new JScrollPane(tree);
+        mainFrame.add(treepane, gbc);
         // deploying top bar on the above of the right
         gbc.gridx = 1;
         gbc.gridy = 0;

@@ -69,15 +69,15 @@ public class ThumbNail {
 			return ;
 		}
 		try {
-			filepath = node.getFPath();
-			filepath2 = node.getFPath();
+			filepath = node.getWorR1();
+			filepath2 = node.getWorR1();
 			System.out.println("node = " + path);
 		}	catch (IOException ex) {
 			ex.printStackTrace();
 		}
 		System.out.println("filepath"+filepath);
 		
-		File [] files = node.getAbFile().listFiles();
+		File [] files = node.getWorR().listFiles();
 		
 		for(int indexOfFiles = 0;indexOfFiles<files.length;indexOfFiles++) {
 			clickedFile.add(files[indexOfFiles]);
