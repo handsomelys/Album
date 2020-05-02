@@ -54,13 +54,13 @@ public class FileNode extends DefaultMutableTreeNode {
 		return filename;
 	}
 
-	public File getWorR() {
+	public File getAbFile() {
 		File file = getFile();
 		File file1 = file.getAbsoluteFile();
 		return file1;
 	}
 
-	public String getWorR1() throws IOException {
+	public String getFPath() throws IOException {
 		File file = getFile();
 		String file1 = file.getPath();
 		return file1;
