@@ -3,8 +3,6 @@ import javax.swing.JFrame;
 import javax.swing.*;
 import javax.swing.JPanel;
 
-import main.Text;
-
 import javax.swing.JButton;
 import javax.imageio.ImageIO;
 
@@ -25,7 +23,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.TimerTask;
 import java.util.Timer;
-import main.Main;
+
+import main.Text;
+import util.FileUtils;
 public class ViewFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	
@@ -284,30 +284,25 @@ public class ViewFrame extends JFrame {
 	
 	
 	public void opendirectory(File p) throws IOException {
-		File[] list_pic=p.listFiles();
-		for(File child:list_pic) {
-			if(child.getName().matches(".*\\.jpg$")||child.getName().matches(".*\\.jpeg$")||
-			child.getName().matches(".*\\.png$")||child.getName().matches(".*\\.gif$")||
-			child.getName().matches(".*\\.bmp$")) {
-				BufferedImage temp=ImageIO.read(child);
+		File[] list_pic = p.listFiles();
+		for (File child:list_pic) {
+			if(FileUtils.isPicture(child)) {
+				BufferedImage temp = ImageIO.read(child);
 				img.add(temp);
 			}
 		}
-		
 	}
 	
 	public void openfile(File p) throws IOException{
-		File father=p.getParentFile();
-		File[] list_pic=father.listFiles();
-		for(File child:list_pic) {
-			if(child.getName().matches(".*\\.jpg$")||child.getName().matches(".*\\.jpeg$")||
-					child.getName().matches(".*\\.png$")||child.getName().matches(".*\\.gif$")||
-					child.getName().matches(".*\\.bmp$")) {
-						if(p.getAbsolutePath().equals(child.getAbsolutePath()))
-							img.add(0, ImageIO.read(child));
-						else
-						img.add(ImageIO.read(child));
-					}
+		File father = p.getParentFile();
+		File[] list_pic = father.listFiles();
+		for (File child:list_pic) {
+			if(FileUtils.isPicture(child)) {
+				if(p.getAbsolutePath().equals(child.getAbsolutePath()))
+					img.add(0, ImageIO.read(child));
+				else
+					img.add(ImageIO.read(child));
+			}
 		}
 	}
     public void initButton() {
@@ -318,12 +313,12 @@ public class ViewFrame extends JFrame {
     	start=new JButton();
     	end= new JButton();
     	
-    	turn_big.setIcon(new ImageIcon(Main.class.getResource("/resource/turnbig.png")));
-    	turn_small.setIcon(new ImageIcon(Main.class.getResource("/resource/turnsmall.png")));
-    	turn_next.setIcon(new ImageIcon(Main.class.getResource("/resource/turnnext.png")));
-    	turn_back.setIcon(new ImageIcon(Main.class.getResource("/resource/turnback.png")));
-    	start.setIcon(new ImageIcon(Main.class.getResource("/resource/start.png")));
-    	end.setIcon(new ImageIcon(Main.class.getResource("/resource/end.png")));
+    	turn_big.setIcon(new ImageIcon("resource/turnbig.png"));
+    	turn_small.setIcon(new ImageIcon("resource/turnsmall.png"));
+    	turn_next.setIcon(new ImageIcon("resource/turnnext.png"));
+    	turn_back.setIcon(new ImageIcon("resource/turnback.png"));
+    	start.setIcon(new ImageIcon("resource/start.png"));
+    	end.setIcon(new ImageIcon("resource/end.png"));
     	
     	turn_big.setBorder(null);
     	turn_small.setBorder(null);

@@ -3,6 +3,7 @@ package main;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.GridBagLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import javax.swing.UIManager;
 import javax.swing.JFrame;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 
 import tree.DiskTree;
 import topbar.TopBar;
+import preview.PreviewPanel;
 import preview.PopupMenu;
 import viewframe.ViewFrame;
 import operation.DirectoryOperationList;
@@ -26,7 +28,7 @@ public class Main {
     File directory;
     JFrame mainFrame;
     DiskTree tree;
-    JPanel previewPanel;
+    PreviewPanel previewPanel;
     PopupMenu popupMenu;
     TopBar topbar;
     DirectoryOperationList dol;
@@ -38,11 +40,12 @@ public class Main {
         MainListener ml = new MainListener();
         this.mainFrame = new JFrame();
         this.tree = new DiskTree();
-        this.previewPanel = new JPanel();
+        this.previewPanel = new PreviewPanel(directory);
         this.popupMenu = new PopupMenu();
         this.topbar = new TopBar(directory);
         this.dol = new DirectoryOperationList();
         this.selectedPictures = new ArrayList<File>();
+        
         this.updateDirectory(directory);
 
         // configuring top bar
@@ -57,11 +60,11 @@ public class Main {
         this.popupMenu.addListener(ml);
         
         // initializing the main frame
-        mainFrame.setTitle(Text.SOFTWARENAME);
-        mainFrame.setLayout(new GridBagLayout());
-        mainFrame.setBounds(100, 100, 800, 600);
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainFrame.setVisible(true);
+        this.mainFrame.setTitle(Text.SOFTWARENAME);
+        this.mainFrame.setLayout(new GridBagLayout());
+        this.mainFrame.setBounds(100, 100, 1200, 600);
+        this.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.mainFrame.setVisible(true);
 
         // deploying the component
         GridBagConstraints gbc = new GridBagConstraints();
@@ -74,8 +77,12 @@ public class Main {
         gbc.gridheight = 2;
         gbc.weightx = 4;
         gbc.weighty = 10;
-        treepane = new JScrollPane(tree);
-        mainFrame.add(treepane, gbc);
+
+        //treepane = new JScrollPane(tree);
+        //mainFrame.add(treepane, gbc);	//gundongtiao
+
+        this.mainFrame.add(this.tree, gbc);
+
         // deploying top bar on the above of the right
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -83,7 +90,7 @@ public class Main {
         gbc.gridheight = 1;
         gbc.weightx = 6;
         gbc.weighty = 1;
-        mainFrame.add(topbar, gbc);
+        this.mainFrame.add(this.topbar, gbc);
         // TODO: deploying preview panel on the center of the right
         gbc.gridx = 1;
         gbc.gridy = 1;
@@ -91,14 +98,33 @@ public class Main {
         gbc.gridheight = 1;
         gbc.weightx = 6;
         gbc.weighty = 9;
-        mainFrame.add(previewPanel, gbc);
+        JScrollPane prepane = new JScrollPane(previewPanel);
+        if(previewPanel.pictures.size()>20) {
+        	prepane.getVerticalScrollBar().setVisible(true);
+        	if(previewPanel.pictures.size()%5==0) {
+        		previewPanel.setPreferredSize(new Dimension(750,725*(previewPanel.pictures.size()/5)));
+        		
+        	}else {
+        		previewPanel.setPreferredSize(new Dimension(750,725*(previewPanel.pictures.size()/5+1)));
+        	}
+        	prepane.getVerticalScrollBar().setValue(0);
+        	
+        }else {
+        	previewPanel.setPreferredSize(new Dimension(700,1550));
+        }
+        //prepane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        prepane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        //prepane.setAutoscrolls(true);
+        this.mainFrame.add(prepane, gbc);
+        
     }
 
     public void updateDirectory(File directory) {
         if (directory.isDirectory()) {
             this.directory = directory.getAbsoluteFile();
             this.topbar.setSelectedPicturesCount(this.selectedPictures.size());
-            this.topbar.updateDirectory(directory);
+            this.topbar.updateDirectory(this.directory);
+            this.previewPanel.updateDirectory(this.directory);
         }
     }
     public void updateDirectory() {
@@ -220,11 +246,12 @@ public class Main {
         } catch(Throwable e) {
             e.printStackTrace();
         }
-        File d = new File("image");
-        File f1 = new File(d, "gugugu.jpg");
+        String p1 =	"F:\\火影背景";
+        File d = new File(p1);
+        String p2 = "F:\\火影背景\\002.jpg";
+        File f1 = new File(d, p2);
         Main m = new Main(d);
         m.selectedPictures.add(f1);
-        m.updateDirectory(m.directory);
         m.configureFileOperationButtons();
     }
 }

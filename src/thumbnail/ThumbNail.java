@@ -1,6 +1,6 @@
 package thumbnail;
 
-import java.awt.BorderLayout;
+//import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -69,15 +69,15 @@ public class ThumbNail {
 			return ;
 		}
 		try {
-			filepath = node.getWorR1();
-			filepath2 = node.getWorR1();
+			filepath = node.getFPath();
+			filepath2 = node.getFPath();
 			System.out.println("node = " + path);
 		}	catch (IOException ex) {
 			ex.printStackTrace();
 		}
 		System.out.println("filepath"+filepath);
 		
-		File [] files = node.getWorR().listFiles();
+		File [] files = node.getAbFile().listFiles();
 		
 		for(int indexOfFiles = 0;indexOfFiles<files.length;indexOfFiles++) {
 			clickedFile.add(files[indexOfFiles]);
