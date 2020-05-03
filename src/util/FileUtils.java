@@ -67,12 +67,13 @@ public class FileUtils {
      * @param file file to rename
      * @param name only name
      */
-    public static void renameFile(File file, String name) {
+    public static boolean renameFile(File file, String name) {
         File nf = Path.of(file.getParent(), name).toFile();
         if (nf.exists()) {
-            System.out.println("file exist!");
+            return false;
         } else {
             file.renameTo(nf);
+            return true;
         }
     }
     /**

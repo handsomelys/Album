@@ -7,11 +7,12 @@ public class CommandEvent extends EventObject {
 
     public String[] command;
     
+    public String[] getCommand() {
+        return this.command;
+    }
+    
     public CommandEvent(CommandSource source, String... command) {
         super(source);
         this.command = command;
-    }
-    public String[] getCommand() {
-        return this.command;
     }
 }

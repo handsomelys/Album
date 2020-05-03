@@ -6,21 +6,21 @@ import java.util.HashSet;
 
 import javax.swing.JPanel;
 
-import event.FileSelectEvent;
-import event.FileSelectListener;
-import event.FileSelectSource;
+import event.FileEvent;
+import event.FileListener;
+import event.FileSource;
 import util.FileUtils;
 
-public class PreviewPanel extends JPanel implements FileSelectSource {
+public class PreviewPanel extends JPanel implements FileSource {
     private static final long serialVersionUID = 1L;
 
     public ArrayList<ThumbNail> pictures;
-    protected HashSet<FileSelectListener> listeners;
+    protected HashSet<FileListener> listeners;
 
     public File directory;
 
     public PreviewPanel(File directory) {
-        this.listeners = new HashSet<FileSelectListener>();
+        this.listeners = new HashSet<FileListener>();
         this.directory = directory.getAbsoluteFile();
         updateDirectory(this.directory);
     }
@@ -55,16 +55,16 @@ public class PreviewPanel extends JPanel implements FileSelectSource {
     }
     // event source method
     @Override
-    public void addListener(FileSelectListener fsl) {
-        this.listeners.add(fsl);
+    public void addListener(FileListener fl) {
+        this.listeners.add(fl);
     }
     @Override
-    public void removeListener(FileSelectListener fsl) {
-        this.listeners.remove(fsl);
+    public void removeListener(FileListener fl) {
+        this.listeners.remove(fl);
     }
     @Override
-    public void notifyAll(FileSelectEvent fse) {
-        for (FileSelectListener fsl: listeners)
-            fsl.actionPerformed(fse);
+    public void notifyAll(FileEvent fe) {
+        for (FileListener fl: listeners)
+            fl.actionPerformed(fe);
     }
 }

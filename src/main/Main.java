@@ -2,13 +2,12 @@ package main;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.GridBagLayout;
 import java.awt.Dimension;
+import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import javax.swing.UIManager;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import java.io.File;
@@ -23,6 +22,7 @@ import operation.DirectoryOperationList;
 import event.CommandEvent;
 import event.CommandListener;
 import util.FileUtils;
+import dialog.RenameDialog;
 
 public class Main {
     File directory;
@@ -203,7 +203,7 @@ public class Main {
                     1);
             } else if (command[0].equals("remove")) {
                 int result = JOptionPane.showConfirmDialog(Main.this.mainFrame,
-                    Text.CONFIRMREMOVE, Text.CONFIRMREMOVETITLE, 0);
+                    Text.CONFIRMREMOVE, Text.REMOVE, 0);
                 if (result == 0) {
                     FileUtils.removeFiles(Main.this.selectedPictures);
                     Main.this.selectedPictures.clear();
@@ -220,6 +220,7 @@ public class Main {
                 FileUtils.copyFiles(Main.this.heldPictures,
                     Main.this.directory.getAbsolutePath());
             } else if (command[0].equals("rename")) {
+                // RenameDialog rd = new RenameDialog();
                 JOptionPane.showMessageDialog(Main.this.mainFrame,
                     "This feature is currently no available.", "tips", 1);
             }
@@ -246,9 +247,9 @@ public class Main {
         } catch(Throwable e) {
             e.printStackTrace();
         }
-        String p1 =	"F:\\火影背景";
-        File d = new File(p1);
-        String p2 = "F:\\火影背景\\002.jpg";
+        String path = "image";
+        File d = new File(path);
+        String p2 = "gugugu.jpg";
         File f1 = new File(d, p2);
         Main m = new Main(d);
         m.selectedPictures.add(f1);
