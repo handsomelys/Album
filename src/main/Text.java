@@ -15,6 +15,11 @@ public class Text {
     public static final String PROPERTIES = "属性";
 
     public static final String CONFIRMREMOVE = "确认要删除选定的图片吗？";
-    public static final String CONFIRMREMOVETITLE = "删除";
+    public static final String CONFIRMRENAME = "确认要重命名选定的图片吗？";
 
+    public static final String NAME = "名称";
+    public static final String STARTINDEX = "起始编号";
+    public static final String BIT = "位";
+    public static final String CONFIRM = "确定";
+    public static final String CANCEL = "取消";
 }

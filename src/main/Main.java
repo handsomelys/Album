@@ -207,7 +207,7 @@ public class Main {
                     1);
             } else if (command[0].equals("remove")) {
                 int result = JOptionPane.showConfirmDialog(Main.this.mainFrame,
-                    Text.CONFIRMREMOVE, Text.CONFIRMREMOVETITLE, 0);
+                    Text.CONFIRMREMOVE, Text.REMOVE, 0);
                 if (result == 0) {
                     FileUtils.removeFiles(Main.this.selectedPictures);
                     Main.this.selectedPictures.clear();
