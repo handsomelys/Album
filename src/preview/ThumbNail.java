@@ -6,6 +6,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,7 +17,7 @@ import javax.swing.SwingConstants;
 
 public class ThumbNail extends JPanel {
     private static final long serialVersionUID = 1L;
-
+    public boolean selected = false;
     public JTextField text;
     public JLabel picture;
     public File file;
@@ -75,6 +78,7 @@ public class ThumbNail extends JPanel {
         this.picture.setHorizontalAlignment(SwingConstants.CENTER);
         this.picture.setOpaque(true);
         
+        //this.setBackground(new java.awt.Color(245,245,245));
         
         
        /*

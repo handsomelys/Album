@@ -78,10 +78,10 @@ public class Main {
         gbc.weightx = 4;
         gbc.weighty = 10;
 
-        //treepane = new JScrollPane(tree);
-        //mainFrame.add(treepane, gbc);	//gundongtiao
+        treepane = new JScrollPane(tree);
+        mainFrame.add(treepane, gbc);	//gundongtiao
 
-        this.mainFrame.add(this.tree, gbc);
+        //this.mainFrame.add(this.tree, gbc);
 
         // deploying top bar on the above of the right
         gbc.gridx = 1;
@@ -113,7 +113,7 @@ public class Main {
         	previewPanel.setPreferredSize(new Dimension(700,1550));
         }
         //prepane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        prepane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        //prepane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         //prepane.setAutoscrolls(true);
         this.mainFrame.add(prepane, gbc);
         

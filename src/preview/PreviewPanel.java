@@ -3,6 +3,9 @@ package preview;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
 
 import javax.swing.JPanel;
 
@@ -16,9 +19,12 @@ public class PreviewPanel extends JPanel implements FileSelectSource {
 
     public ArrayList<ThumbNail> pictures;
     protected HashSet<FileSelectListener> listeners;
-
+    public int sx;
+	public int sy;
+	public int ex;
+	public int ey;
     public File directory;
-
+    public boolean current = true;
     public PreviewPanel(File directory) {
         this.listeners = new HashSet<FileSelectListener>();
         this.directory = directory.getAbsoluteFile();
@@ -48,10 +54,13 @@ public class PreviewPanel extends JPanel implements FileSelectSource {
         }
         
         for(int i=0;i<this.pictures.size();i++) {
-        		this.pictures.get(i).setBounds(i%5*175,i/5*120,150,142);
+        		this.pictures.get(i).setBounds(i%5*175,i/5*150,150,142);
         }
-        
+        FileUtils.picListener1(this);
+        FileUtils.picListener2(this);
+        FileUtils.picListener3(this);
         //this.repaint();
+        this.printLocation();
     }
     // event source method
     @Override
@@ -66,5 +75,24 @@ public class PreviewPanel extends JPanel implements FileSelectSource {
     public void notifyAll(FileSelectEvent fse) {
         for (FileSelectListener fsl: listeners)
             fsl.actionPerformed(fse);
+    }
+    
+    protected void panintComponent(Graphics g) {
+    	if(!this.current) return;
+    	g.setColor(new java.awt.Color(135,206,235));
+    	g.fillRect(Math.min(this.sx, this.ex), Math.min(this.sy, this.ey), Math.abs(this.sx-this.ex), Math.abs(this.sy-this.ey));
+    	super.paintComponent(g);
+    }
+    protected void paintBorder(Graphics g) {
+        if (this.current)
+            return;
+        g.setColor(getForeground());
+        g.drawRect(Math.min(sx, ex), Math.min(sy, ey), Math.abs(sx - ex),
+                Math.abs(sy - ey));
+    }
+    public void printLocation() {
+    	for(int i=0;i<this.pictures.size();i++) {
+    		System.out.println("location:"+this.pictures.get(i).getLocation()+this.pictures.get(i).text.getText());
+    	}
     }
 }

@@ -2,7 +2,16 @@ package util;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+
+import javax.swing.JLabel;
+
+import preview.PreviewPanel;
+import preview.ThumbNail;
+
 import java.util.regex.Matcher;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -135,4 +144,132 @@ public class FileUtils {
         }
         return String.format("%.2f%s", length, sign[index]);
     }
+    
+    public static void picListener1(PreviewPanel pp) {
+    	for(int i=0;i<pp.pictures.size();i++) {
+    		pp.pictures.get(i).addMouseListener(new MouseAdapter() {
+    			
+    			public void mousePressed(MouseEvent e) {
+    				
+    				int seleted = 0;
+    				
+    				ThumbNail  selectedLabel;
+    				selectedLabel = (ThumbNail) e.getSource();
+    				//selectedLabel.setBackground(new java.awt.Color(0,191,255));
+    				/*
+    				System.out.println(e.getSource() instanceof ThumbNail);
+    				if(!(e.getSource() instanceof ThumbNail)) {
+    					for(int x=0;x<pp.pictures.size();x++) {
+    						pp.pictures.get(x).picture.setBackground(new java.awt.Color(245,245,245));
+        					pp.pictures.get(x).selected = false;
+    					}
+    				}
+    				*/
+    				//单击取消要放在previewpanel的监听里
+    				for(int j=0;j<pp.pictures.size();j++) {
+    					if(pp.pictures.get(j).picture.getIcon().equals(selectedLabel.picture.getIcon())) {
+    						seleted = j;
+    						
+    					}
+    				}
+    				for(int z=0;z<pp.pictures.size();z++) {
+    					if(z!=seleted&&pp.pictures.get(z).selected==true) {
+    						pp.pictures.get(z).picture.setBackground(new java.awt.Color(245,245,245));
+    						pp.pictures.get(z).selected = false;
+    					}
+    				}
+    				if(!pp.pictures.get(seleted).selected)
+    				{
+    					pp.pictures.get(seleted).picture.setBackground(new java.awt.Color(0,191,255));
+    					pp.pictures.get(seleted).selected = true;
+    				}
+    				else if(pp.pictures.get(seleted).selected) {
+    					pp.pictures.get(seleted).picture.setBackground(new java.awt.Color(245,245,245));
+    					pp.pictures.get(seleted).selected = false;
+    				}
+    				/*
+    				if(flag == 0) {
+    					for(int i=0;i<pp.pictures.size();i++) {
+    						pp.pictures.get(seleted).picture.setBackground(new java.awt.Color(245,245,245));
+        					pp.pictures.get(seleted).selected = false;
+    					}
+    				}
+    				*/
+    				/*
+    				if(clickTime%2==1) {
+    					pp.pictures.get(seleted).picture.setBackground(new java.awt.Color(0,191,255));
+    				}
+    				else {
+    					pp.pictures.get(seleted).picture.setBackground(new java.awt.Color(245,245,245));
+    				}*/
+    				
+    			}
+    		});
+    	}
+    }
+    public static void picListener2(PreviewPanel pp) {
+    		pp.addMouseListener(new MouseAdapter() {
+    			
+    			@Override
+    			public void mousePressed(MouseEvent e) {
+    				 pp.sx=e.getX();
+    				 pp.sy=e.getY();
+    				System.out.println("sx:"+pp.sx);
+    				System.out.println("sy:"+pp.sy);
+    			}
+    			@Override
+    			public void mouseReleased(MouseEvent e) {
+    				pp.ex=e.getX();
+    				pp.ey=e.getY();
+    				System.out.println("ex:"+pp.ex);
+    				System.out.println("ex:"+pp.ey);
+    				pp.current = true;
+    				pp.repaint();
+    				addSelectedField();
+    				
+    			}
+    			
+    			public void addSelectedField() {
+    				for(int i=0;i<pp.pictures.size();i++) {
+    					if(judge(pp,i,pp.ex,pp.ey,pp.sx,pp.sy)) {
+    						pp.pictures.get(i).selected = true;
+    						if(pp.pictures.get(i).selected) {
+    							pp.pictures.get(i).picture.setBackground(new java.awt.Color(245,245,245));
+    						}
+    					}
+    				}
+    			}
+    			
+    			
+    			
+    		});
+    }
+    
+    public static void picListener3(PreviewPanel pp) {
+    	pp.addMouseMotionListener(new MouseMotionAdapter() {
+    		public void mouseDragged(MouseEvent e) {
+    			pp.ex = e.getX();
+    			pp.ey = e.getY();
+    			pp.current = false;
+    			pp.repaint();
+    		}
+    	});
+    }
+    
+	protected static boolean judge(PreviewPanel pp,int i,int ex,int ey,int sx,int sy) {
+		if((pp.pictures.get(i).picture.getX()>=sx&&pp.pictures.get(i).picture.getX()<=ex)) {
+			if(pp.pictures.get(i).picture.getY()<=sy&&pp.pictures.get(i).picture.getY()>=ey) {
+				System.out.println(pp.pictures.get(i).text.getName()+"选中");
+				return true;
+			}
+		}
+		else if((pp.pictures.get(i).picture.getX()<=sx&&pp.pictures.get(i).picture.getX()>=ex)) {
+			if((pp.pictures.get(i).picture.getY()>=sy&&pp.pictures.get(i).picture.getY()<=ey)) {
+				System.out.println(pp.pictures.get(i).text.getName()+"选中");
+				return true;
+			}
+		}
+		//System.out.println("无任何选中");
+		return false;
+	}
 }
