@@ -34,7 +34,12 @@ public class Main {
     DirectoryOperationList dol;
     ArrayList<File> selectedPictures;
     ArrayList<File> heldPictures;
+<<<<<<< HEAD
+    JScrollPane scroll1;
+    JPanel pane1;
+=======
     JScrollPane treepane;
+>>>>>>> refs/remotes/origin/dev
     public Main(File directory) {
         // initializing variable
         MainListener ml = new MainListener();
@@ -45,7 +50,8 @@ public class Main {
         this.topbar = new TopBar(directory);
         this.dol = new DirectoryOperationList();
         this.selectedPictures = new ArrayList<File>();
-        
+        this.scroll1=new JScrollPane();
+        this.pane1=new JPanel();
         this.updateDirectory(directory);
 
         // configuring top bar
@@ -65,7 +71,9 @@ public class Main {
         this.mainFrame.setBounds(100, 100, 1200, 600);
         this.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.mainFrame.setVisible(true);
-
+        
+        this.scroll1.setViewportView(this.tree);
+        
         // deploying the component
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
@@ -77,12 +85,16 @@ public class Main {
         gbc.gridheight = 2;
         gbc.weightx = 4;
         gbc.weighty = 10;
+<<<<<<< HEAD
+        this.mainFrame.add(this.scroll1, gbc);
+=======
 
         //treepane = new JScrollPane(tree);
         //mainFrame.add(treepane, gbc);	//gundongtiao
 
         this.mainFrame.add(this.tree, gbc);
 
+>>>>>>> refs/remotes/origin/dev
         // deploying top bar on the above of the right
         gbc.gridx = 1;
         gbc.gridy = 0;
