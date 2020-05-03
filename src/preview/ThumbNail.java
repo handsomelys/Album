@@ -18,10 +18,11 @@ import javax.swing.SwingConstants;
 public class ThumbNail extends JPanel {
     private static final long serialVersionUID = 1L;
     public boolean selected = false;
+    public int clicktwice = 0;
     public JTextField text;
     public JLabel picture;
     public File file;
-
+    public int centerx,centery;
     public ThumbNail(File file) {
     	//this.setLayout(null);
         // initializing variable
@@ -77,6 +78,15 @@ public class ThumbNail extends JPanel {
         this.text.setEditable(false);
         this.picture.setHorizontalAlignment(SwingConstants.CENTER);
         this.picture.setOpaque(true);
+        /*
+        int tmpx1,tmpy1,tmpx2,tmpy2;
+        tmpx1 = this.getX();
+        tmpy1 = this.getY();
+        tmpx2 = tmpx1 + 150;
+        tmpy2 = tmpy1 + 142;
+        this.centerx = (tmpx1+tmpx2)/2;
+        this.centery = (tmpy1+tmpy2)/2;
+        */
         
         //this.setBackground(new java.awt.Color(245,245,245));
         

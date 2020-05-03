@@ -3,12 +3,15 @@ package util;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import preview.PreviewPanel;
 import preview.ThumbNail;
 
 import java.util.regex.Matcher;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -22,6 +25,7 @@ public class FileUtils {
      * @param file file to copy
      * @param dest the desination path
      */
+	static boolean ctrl = false;
     public static void copyFile(File file, String dest) {
         String reg = "-copy(\\((\\d+)\\))?";
         Pattern p = Pattern.compile(reg);
@@ -144,8 +148,76 @@ public class FileUtils {
         }
         return String.format("%.2f%s", length, sign[index]);
     }
-    
+    /*
+    public static void picListener_keyboard(PreviewPanel pp) {
+    		for(int i=0;i<pp.pictures.size();i++) {
+    			
+    		
+    		pp.pictures.get(i).addKeyListener(new KeyListener() {
+    			
+				@Override
+				public void keyTyped(KeyEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+					// TODO Auto-generated method stub
+					if(e.getKeyCode()==KeyEvent.VK_CONTROL) {
+						ctrl = true;
+						System.out.println("ctrl pressed "+ctrl);
+					}
+				}
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+					// TODO Auto-generated method stub
+					if(e.getKeyCode()==KeyEvent.VK_CONTROL) {
+						ctrl = false;
+						System.out.println("ctrl松开"+ctrl);
+					}
+				}
+    			
+    		});
+    	}
+    }
+    */
+    public static void picListener_keyboard(JFrame f) {
+		
+			
+		f.requestFocus();
+		f.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if(e.getKeyCode()==KeyEvent.VK_CONTROL) {
+					ctrl = true;
+					//System.out.println("ctrl pressed "+ctrl);
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if(e.getKeyCode()==KeyEvent.VK_CONTROL) {
+					ctrl = false;
+					//System.out.println("ctrl松开"+ctrl);
+				}
+			}
+			
+		});
+	}
+
     public static void picListener1(PreviewPanel pp) {
+    	
     	for(int i=0;i<pp.pictures.size();i++) {
     		pp.pictures.get(i).addMouseListener(new MouseAdapter() {
     			
@@ -172,21 +244,44 @@ public class FileUtils {
     						
     					}
     				}
-    				for(int z=0;z<pp.pictures.size();z++) {
+    				if(!ctrl) {
+    					for(int z=0;z<pp.pictures.size();z++) {
     					if(z!=seleted&&pp.pictures.get(z).selected==true) {
     						pp.pictures.get(z).picture.setBackground(new java.awt.Color(245,245,245));
     						pp.pictures.get(z).selected = false;
     					}
+    					if(!pp.pictures.get(seleted).selected)
+        				{
+        					pp.pictures.get(seleted).picture.setBackground(new java.awt.Color(0,191,255));
+        					pp.pictures.get(seleted).selected = true;
+        				}
+        				else if(pp.pictures.get(seleted).selected) {
+        					pp.pictures.get(seleted).picture.setBackground(new java.awt.Color(245,245,245));
+        					pp.pictures.get(seleted).selected = false;
+        				}
     				}
-    				if(!pp.pictures.get(seleted).selected)
+    				}
+    				if(ctrl) {
+    					pp.pictures.get(seleted).picture.setBackground(new java.awt.Color(0,191,255));
+    					pp.pictures.get(seleted).selected = true;
+    					pp.pictures.get(seleted).clicktwice++;
+    					if(!pp.pictures.get(seleted).selected)
     				{
     					pp.pictures.get(seleted).picture.setBackground(new java.awt.Color(0,191,255));
     					pp.pictures.get(seleted).selected = true;
     				}
-    				else if(pp.pictures.get(seleted).selected) {
+    					if(pp.pictures.get(seleted).clicktwice%2==0) {
+    						pp.pictures.get(seleted).picture.setBackground(new java.awt.Color(245,245,245));
+        					pp.pictures.get(seleted).selected = false;
+    					}
+    					/*
+    					else if(pp.pictures.get(seleted).selected) {
     					pp.pictures.get(seleted).picture.setBackground(new java.awt.Color(245,245,245));
     					pp.pictures.get(seleted).selected = false;
     				}
+    				*/
+    		
+    				
     				/*
     				if(flag == 0) {
     					for(int i=0;i<pp.pictures.size();i++) {
@@ -204,7 +299,7 @@ public class FileUtils {
     				}*/
     				
     			}
-    		});
+    			}});
     	}
     }
     public static void picListener2(PreviewPanel pp) {
@@ -222,7 +317,7 @@ public class FileUtils {
     				pp.ex=e.getX();
     				pp.ey=e.getY();
     				System.out.println("ex:"+pp.ex);
-    				System.out.println("ex:"+pp.ey);
+    				System.out.println("ey:"+pp.ey);
     				pp.current = true;
     				pp.repaint();
     				addSelectedField();
@@ -233,9 +328,8 @@ public class FileUtils {
     				for(int i=0;i<pp.pictures.size();i++) {
     					if(judge(pp,i,pp.ex,pp.ey,pp.sx,pp.sy)) {
     						pp.pictures.get(i).selected = true;
-    						if(pp.pictures.get(i).selected) {
-    							pp.pictures.get(i).picture.setBackground(new java.awt.Color(245,245,245));
-    						}
+    						pp.pictures.get(i).picture.setBackground(new java.awt.Color(0,191,255));
+    						
     					}
     				}
     			}
@@ -257,19 +351,26 @@ public class FileUtils {
     }
     
 	protected static boolean judge(PreviewPanel pp,int i,int ex,int ey,int sx,int sy) {
-		if((pp.pictures.get(i).picture.getX()>=sx&&pp.pictures.get(i).picture.getX()<=ex)) {
-			if(pp.pictures.get(i).picture.getY()<=sy&&pp.pictures.get(i).picture.getY()>=ey) {
+		
+		
+		if((pp.pictures.get(i).centerx<sx&&pp.pictures.get(i).centerx>ex)) {
+			if(pp.pictures.get(i).centery>sy&&pp.pictures.get(i).centery<ey) {
+				System.out.println("x:"+pp.pictures.get(i).centerx+"  y:"+pp.pictures.get(i).centery);
 				System.out.println(pp.pictures.get(i).text.getName()+"选中");
 				return true;
 			}
 		}
-		else if((pp.pictures.get(i).picture.getX()<=sx&&pp.pictures.get(i).picture.getX()>=ex)) {
-			if((pp.pictures.get(i).picture.getY()>=sy&&pp.pictures.get(i).picture.getY()<=ey)) {
+		else if((pp.pictures.get(i).centerx>sx&&pp.pictures.get(i).centerx<ex)) {
+			if((pp.pictures.get(i).centery<sy&&pp.pictures.get(i).centery>ex)) {
+				System.out.println("x:"+pp.pictures.get(i).centerx+"  y:"+pp.pictures.get(i).centery);
 				System.out.println(pp.pictures.get(i).text.getName()+"选中");
 				return true;
 			}
 		}
 		//System.out.println("无任何选中");
+		 
+		
+		
 		return false;
 	}
 }

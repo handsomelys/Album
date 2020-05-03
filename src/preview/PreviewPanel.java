@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 
 import javax.swing.JPanel;
@@ -25,6 +28,7 @@ public class PreviewPanel extends JPanel implements FileSelectSource {
 	public int ey;
     public File directory;
     public boolean current = true;
+    
     public PreviewPanel(File directory) {
         this.listeners = new HashSet<FileSelectListener>();
         this.directory = directory.getAbsoluteFile();
@@ -56,11 +60,17 @@ public class PreviewPanel extends JPanel implements FileSelectSource {
         for(int i=0;i<this.pictures.size();i++) {
         		this.pictures.get(i).setBounds(i%5*175,i/5*150,150,142);
         }
+        this.setFocusable(true);
+        
+        //FileUtils.picListener_keyboard(this);
         FileUtils.picListener1(this);
         FileUtils.picListener2(this);
         FileUtils.picListener3(this);
+        
         //this.repaint();
-        this.printLocation();
+        
+        this.setCenterLocation();
+        //this.printLocation();
     }
     // event source method
     @Override
@@ -90,9 +100,19 @@ public class PreviewPanel extends JPanel implements FileSelectSource {
         g.drawRect(Math.min(sx, ex), Math.min(sy, ey), Math.abs(sx - ex),
                 Math.abs(sy - ey));
     }
-    public void printLocation() {
+    public void setCenterLocation() {
     	for(int i=0;i<this.pictures.size();i++) {
-    		System.out.println("location:"+this.pictures.get(i).getLocation()+this.pictures.get(i).text.getText());
+    		//System.out.println("location:"+this.pictures.get(i).getLocation()+this.pictures.get(i).text.getText());
+    		this.pictures.get(i).centerx = (this.pictures.get(i).getX()+150)/2;
+    		this.pictures.get(i).centery = (this.pictures.get(i).getY()+142)/2;
     	}
     }
+    
+    public void printLocation() {
+    	for(int i=0;i<this.pictures.size();i++) {
+    		//System.out.println("location:"+this.pictures.get(i).getLocation()+this.pictures.get(i).text.getText());
+    		System.out.println("x:"+this.pictures.get(i).centerx+"  y:"+this.pictures.get(i).centery);
+    	}
+    }
+	
 }
