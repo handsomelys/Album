@@ -25,6 +25,7 @@ public class PreviewPanel extends JPanel implements FileSelectSource {
         updateDirectory(this.directory);
     }
     public void updateDirectory(File directory) {
+    	this.setLayout(null);
         this.directory = directory;
         if (this.pictures == null)
             this.pictures = new ArrayList<ThumbNail>();
@@ -45,7 +46,12 @@ public class PreviewPanel extends JPanel implements FileSelectSource {
         for (ThumbNail tb : this.pictures) {
             this.add(tb);
         }
-        this.repaint();
+        
+        for(int i=0;i<this.pictures.size();i++) {
+        		this.pictures.get(i).setBounds(i%5*175,i/5*120,150,142);
+        }
+        
+        //this.repaint();
     }
     // event source method
     @Override

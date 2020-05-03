@@ -3,6 +3,7 @@ package main;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.GridBagLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import javax.swing.UIManager;
 import javax.swing.JFrame;
@@ -33,8 +34,12 @@ public class Main {
     DirectoryOperationList dol;
     ArrayList<File> selectedPictures;
     ArrayList<File> heldPictures;
+<<<<<<< HEAD
     JScrollPane scroll1;
     JPanel pane1;
+=======
+    JScrollPane treepane;
+>>>>>>> refs/remotes/origin/dev
     public Main(File directory) {
         // initializing variable
         MainListener ml = new MainListener();
@@ -63,7 +68,7 @@ public class Main {
         // initializing the main frame
         this.mainFrame.setTitle(Text.SOFTWARENAME);
         this.mainFrame.setLayout(new GridBagLayout());
-        this.mainFrame.setBounds(100, 100, 800, 600);
+        this.mainFrame.setBounds(100, 100, 1200, 600);
         this.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.mainFrame.setVisible(true);
         
@@ -80,7 +85,16 @@ public class Main {
         gbc.gridheight = 2;
         gbc.weightx = 4;
         gbc.weighty = 10;
+<<<<<<< HEAD
         this.mainFrame.add(this.scroll1, gbc);
+=======
+
+        //treepane = new JScrollPane(tree);
+        //mainFrame.add(treepane, gbc);	//gundongtiao
+
+        this.mainFrame.add(this.tree, gbc);
+
+>>>>>>> refs/remotes/origin/dev
         // deploying top bar on the above of the right
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -96,7 +110,25 @@ public class Main {
         gbc.gridheight = 1;
         gbc.weightx = 6;
         gbc.weighty = 9;
-        this.mainFrame.add(this.previewPanel, gbc);
+        JScrollPane prepane = new JScrollPane(previewPanel);
+        if(previewPanel.pictures.size()>20) {
+        	prepane.getVerticalScrollBar().setVisible(true);
+        	if(previewPanel.pictures.size()%5==0) {
+        		previewPanel.setPreferredSize(new Dimension(750,725*(previewPanel.pictures.size()/5)));
+        		
+        	}else {
+        		previewPanel.setPreferredSize(new Dimension(750,725*(previewPanel.pictures.size()/5+1)));
+        	}
+        	prepane.getVerticalScrollBar().setValue(0);
+        	
+        }else {
+        	previewPanel.setPreferredSize(new Dimension(700,1550));
+        }
+        //prepane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        prepane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        //prepane.setAutoscrolls(true);
+        this.mainFrame.add(prepane, gbc);
+        
     }
 
     public void updateDirectory(File directory) {
@@ -226,8 +258,10 @@ public class Main {
         } catch(Throwable e) {
             e.printStackTrace();
         }
-        File d = new File("image");
-        File f1 = new File(d, "gugugu.jpg");
+        String p1 =	"F:\\火影背景";
+        File d = new File(p1);
+        String p2 = "F:\\火影背景\\002.jpg";
+        File f1 = new File(d, p2);
         Main m = new Main(d);
         m.selectedPictures.add(f1);
         m.configureFileOperationButtons();
