@@ -250,9 +250,9 @@ public class Main {
         } catch(Throwable e) {
             e.printStackTrace();
         }
-        String p1 =	"F:\\火影背景";
+        String p1 =	"F:\\test__pic\\test_pic";
         File d = new File(p1);
-        String p2 = "F:\\火影背景\\002.jpg";
+        String p2 = "F:\\test__pic\\test_pic\\123.jpg";
         File f1 = new File(d, p2);
         Main m = new Main(d);
         m.selectedPictures.add(f1);

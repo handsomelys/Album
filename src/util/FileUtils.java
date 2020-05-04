@@ -352,7 +352,7 @@ public class FileUtils {
     }
     
 	protected static boolean judge(PreviewPanel pp,int i,int ex,int ey,int sx,int sy) {
-		
+		/*
 		
 		if((pp.pictures.get(i).centerx<sx&&pp.pictures.get(i).centerx>ex)) {
 			if(pp.pictures.get(i).centery>sy&&pp.pictures.get(i).centery<ey) {
@@ -362,16 +362,24 @@ public class FileUtils {
 			}
 		}
 		else if((pp.pictures.get(i).centerx>sx&&pp.pictures.get(i).centerx<ex)) {
-			if((pp.pictures.get(i).centery<sy&&pp.pictures.get(i).centery>ex)) {
+			if((pp.pictures.get(i).centery<sy&&pp.pictures.get(i).centery>ey)) {
 				System.out.println("x:"+pp.pictures.get(i).centerx+"  y:"+pp.pictures.get(i).centery);
 				System.out.println(pp.pictures.get(i).text.getName()+"选中");
 				return true;
 			}
 		}
-		//System.out.println("无任何选中");
-		 
-		
-		
+		System.out.println("无任何选中");
+		 */
+		//比大的小 比小的大
+		if(Math.max(sx, ex)>=pp.pictures.get(i).centerx
+				&&Math.min(sx, ex)<=pp.pictures.get(i).centerx
+				&&Math.max(sy, ey)>=pp.pictures.get(i).centery
+				&&Math.min(sy, ey)<=pp.pictures.get(i).centery)
+		{
+			System.out.println(pp.pictures.get(i).text.getName()+"选中");
+			return true;
+		}
+			
 		return false;
 	}
 }
