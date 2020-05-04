@@ -95,14 +95,14 @@ public class FileUtils {
      * @param start index that start from
      * @param bit the bits of later number
      */
-    public static void renameFiles(ArrayList<File> files, String name,
-        int start, int bit) {
-            for (int i = 0; i < files.size(); ++i) {
-                String previous = files.get(i).getName();
-                String suffix = previous.substring(previous.lastIndexOf("."));
-                FileUtils.renameFile(files.get(i),
-                    name + String.format("%0"+bit+"d", i) + suffix);
-            }
+    public static void renameFiles(ArrayList<File> files,
+        String name, int start, int bit) {
+        for (int i = 0; i < files.size(); ++i) {
+            String previous = files.get(i).getName();
+            String suffix = previous.substring(previous.lastIndexOf("."));
+            FileUtils.renameFile(files.get(i),
+                name + String.format("%0"+bit+"d", i) + suffix);
+        }
     }
 
     /**
@@ -148,6 +148,10 @@ public class FileUtils {
             ++index;
         }
         return String.format("%.2f%s", length, sign[index]);
+    }
+    public static String getFileNameNoExtension(File file) {
+        String name = file.getName();
+        return name.substring(0, name.lastIndexOf("."));
     }
     /*
     public static void picListener_keyboard(PreviewPanel pp) {
@@ -201,7 +205,7 @@ public class FileUtils {
 				// TODO Auto-generated method stub
 				if(e.getKeyCode()==KeyEvent.VK_CONTROL) {
 					ctrl = true;
-					//System.out.println("ctrl pressed "+ctrl);
+					System.out.println("ctrl pressed "+ctrl);
 				}
 			}
 
@@ -210,7 +214,7 @@ public class FileUtils {
 				// TODO Auto-generated method stub
 				if(e.getKeyCode()==KeyEvent.VK_CONTROL) {
 					ctrl = false;
-					//System.out.println("ctrl松开"+ctrl);
+					System.out.println("ctrl松开"+ctrl);
 				}
 			}
 			

@@ -16,6 +16,7 @@ public class Text {
 
     public static final String CONFIRMREMOVE = "确认要删除选定的图片吗？";
     public static final String CONFIRMRENAME = "确认要重命名选定的图片吗？";
+    public static final String RENAMESUCCESS = "重命名成功。";
 
     public static final String NAME = "名称";
     public static final String STARTINDEX = "起始编号";
