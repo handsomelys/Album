@@ -8,7 +8,6 @@ import java.awt.GridBagConstraints;
 import javax.swing.UIManager;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import java.io.File;
@@ -250,12 +249,12 @@ public class Main {
         } catch(Throwable e) {
             e.printStackTrace();
         }
-        String p1 =	"F:\\test__pic\\123";
-        File d = new File(p1);
-        String p2 = "F:\\test__pic\\123\\123.jpg";
-        File f1 = new File(d, p2);
-        Main m = new Main(d);
-        m.selectedPictures.add(f1);
+        // File d1 = new File("F:\\test__pic\\123");
+        // File f1 = new File(d1, "123.jpg");
+        File d2 = new File("image");
+        File f2 = new File(d2, "gugugu.jpg");
+        Main m = new Main(d2);
+        m.selectedPictures.add(f2);
         m.configureFileOperationButtons();
     }
 }

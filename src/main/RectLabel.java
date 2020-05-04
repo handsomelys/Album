@@ -10,7 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
  
 public class RectLabel extends JLabel {
- 
+    private static final long serialVersionUID = 1L;
+    
     private int x1 = 0;
     private int y1 = 0;
     private int x2 = 0;

@@ -3,12 +3,7 @@ package preview;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 
 import javax.swing.JPanel;
 
@@ -67,7 +62,7 @@ public class PreviewPanel extends JPanel implements FileSource {
         FileUtils.picListener2(this);
         FileUtils.picListener3(this);
         
-        this.repaint();
+        //this.repaint();
         
         this.setCenterLocation();
         //this.printLocation();
