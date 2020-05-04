@@ -67,24 +67,10 @@ public class PreviewPanel extends JPanel implements FileSource {
         FileUtils.picListener2(this);
         FileUtils.picListener3(this);
         
-        //this.repaint();
+        this.repaint();
         
         this.setCenterLocation();
         //this.printLocation();
-    }
-    // event source method
-    @Override
-    public void addListener(FileListener fl) {
-        this.listeners.add(fl);
-    }
-    @Override
-    public void removeListener(FileListener fl) {
-        this.listeners.remove(fl);
-    }
-    @Override
-    public void notifyAll(FileEvent fe) {
-        for (FileListener fl: listeners)
-            fl.actionPerformed(fe);
     }
     
     protected void panintComponent(Graphics g) {
@@ -114,5 +100,18 @@ public class PreviewPanel extends JPanel implements FileSource {
     		System.out.println("x:"+this.pictures.get(i).centerx+"  y:"+this.pictures.get(i).centery);
     	}
     }
-	
+    // event source method
+    @Override
+    public void addListener(FileListener fl) {
+        this.listeners.add(fl);
+    }
+    @Override
+    public void removeListener(FileListener fl) {
+        this.listeners.remove(fl);
+    }
+    @Override
+    public void notifyAll(FileEvent fe) {
+        for (FileListener fl: listeners)
+            fl.actionPerformed(fe);
+    }
 }

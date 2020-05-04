@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import javax.swing.UIManager;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -14,15 +15,17 @@ import javax.swing.JScrollPane;
 import java.io.File;
 import java.util.ArrayList;
 
-import tree.DiskTree;
-import topbar.TopBar;
-import preview.PreviewPanel;
-import preview.PopupMenu;
-import viewframe.ViewFrame;
-import operation.DirectoryOperationList;
+import dialog.FileRenameDialog;
+import dialog.FilesRenameDialog;
 import event.CommandEvent;
 import event.CommandListener;
+import operation.DirectoryOperationList;
+import preview.PopupMenu;
+import preview.PreviewPanel;
+import topbar.TopBar;
+import tree.DiskTree;
 import util.FileUtils;
+import viewframe.ViewFrame;
 
 public class Main {
     File directory;
@@ -224,8 +227,11 @@ public class Main {
                 FileUtils.copyFiles(Main.this.heldPictures,
                     Main.this.directory.getAbsolutePath());
             } else if (command[0].equals("rename")) {
-                JOptionPane.showMessageDialog(Main.this.mainFrame,
-                    "This feature is currently no available.", "tips", 1);
+                if (Main.this.selectedPictures.size() == 1)
+                    new FileRenameDialog(Main.this.selectedPictures.get(0));
+                else if (Main.this.selectedPictures.size() > 1)
+                new FilesRenameDialog(Main.this.selectedPictures);
+                Main.this.updateDirectory();
             }
         }
     }
@@ -250,12 +256,10 @@ public class Main {
         } catch(Throwable e) {
             e.printStackTrace();
         }
-        String p1 =	"F:\\火影背景";
-        File d = new File(p1);
-        String p2 = "F:\\火影背景\\002.jpg";
-        File f1 = new File(d, p2);
+        File d = new File("image");
+        File f = new File(d, "gugugu.jpg");
         Main m = new Main(d);
-        m.selectedPictures.add(f1);
+        m.selectedPictures.add(f);
         m.configureFileOperationButtons();
     }
 }

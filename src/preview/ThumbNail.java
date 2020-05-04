@@ -13,21 +13,25 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class ThumbNail extends JPanel {
     private static final long serialVersionUID = 1L;
+
     public boolean selected = false;
     public int clicktwice = 0;
     public JTextField text;
     public JLabel picture;
     public File file;
     public int centerx,centery;
+
     public ThumbNail(File file) {
-    	//this.setLayout(null);
+        //this.setLayout(null);
         // initializing variable
-    	this.repaint();
-    	this.setLayout(null);
-    	this.setPreferredSize(new Dimension(300,125));
+        this.repaint();
+        this.setLayout(null);
+        this.setPreferredSize(new Dimension(300,125));
         if (file != null)
             this.file = file.getAbsoluteFile();
         this.text = new JTextField();
@@ -102,6 +106,21 @@ public class ThumbNail extends JPanel {
         this.picture.setBounds(0, 0, 100, 100);
         this.text.setBounds(20,98,50,50);
         */
-        
+        this.text.getDocument().addDocumentListener(new DocumentListener(){
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+              String s = ThumbNail.this.text.getText();
+              System.out.println(s);
+            }
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+
+            }
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+
+            }
+        }
+        );
     }
 }
