@@ -12,113 +12,104 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-public class ThumbNail extends JPanel {
+import main.Colors;
+
+public class Thumbnail extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    public boolean selected = false;
-    public int clicktwice = 0;
+    public static final int WIDTH = 150;
+    public static final int PICTUREHEIGHT = 130;
+    public static final int TEXTHEIGHT = 20;
+    public static final int TOTALHEIGHT =
+        Thumbnail.PICTUREHEIGHT+Thumbnail.TEXTHEIGHT;
+
+    public File file;
     public JTextField text;
     public JLabel picture;
-    public File file;
-    public int centerx,centery;
+    public boolean selected;
+    public int centerX;
+    public int centerY;
 
-    public ThumbNail(File file) {
-        //this.setLayout(null);
-        // initializing variable
-        this.repaint();
-        this.setLayout(null);
-        this.setPreferredSize(new Dimension(300,125));
-        if (file != null)
-            this.file = file.getAbsoluteFile();
+	public boolean isSelected() {
+        return this.selected;
+    }
+
+    public Thumbnail(File file) {
+        // initializing variables
+        this.file = file.getAbsoluteFile();
         this.text = new JTextField();
         this.picture = new JLabel();
-        // create thumbnail
-        ImageIcon image = new ImageIcon(this.file.getAbsolutePath());
-        /*
-        double h1 = image.getIconHeight();
-        double w1 = image.getIconWidth();
-        if(h1<77 && w1<100) {
-            Image im = image.getImage().getScaledInstance((int)w1, (int)h1, Image.SCALE_DEFAULT);	//创建缩放图  hints参数是选择加载的算法 这里用的默认的
-            ImageIcon ic2 = new ImageIcon(im);
-            this.picture.setIcon(ic2);
-            ic2.setImageObserver(this.picture);
-            this.text.setText(this.file.getName());
-        }
-        else {
-            if(h1*180>w1*142) {
-                Image im = image.getImage().getScaledInstance((int)(w1/(h1/81)), 81, Image.SCALE_DEFAULT);
-                ImageIcon ic2 = new ImageIcon(im);
-                this.picture.setIcon(ic2);
-                ic2.setImageObserver(this.picture);
-                this.text.setText(this.file.getName());
-            }
-            else {
-                Image im = image.getImage().getScaledInstance(105,(int)(h1/(w1/105)),Image.SCALE_DEFAULT);
-                ImageIcon ic2 = new ImageIcon(im);
-                this.picture.setIcon(ic2);
-                ic2.setImageObserver(this.picture);
-                this.text.setText(this.file.getName());
-            }
-        }
-        */
-        Image im = image.getImage().getScaledInstance(133, 106, Image.SCALE_DEFAULT);
-        ImageIcon ic2 = new ImageIcon(im);
-        this.picture.setIcon(ic2);
-        ic2.setImageObserver(this.picture);
+        this.selected = false;
+        this.centerX = 0;
+        this.centerY = 0;
+
+        // configuring self
+        this.setLayout(new BorderLayout());
+        this.setFocusable(true);
+        this.setPreferredSize(new Dimension(
+            Thumbnail.WIDTH, Thumbnail.TOTALHEIGHT));
+
+        // configuring components
+        this.text.setPreferredSize(new Dimension(
+            Thumbnail.WIDTH, Thumbnail.TEXTHEIGHT));
+        this.text.setBorder(null);
+        this.text.setEditable(false);
+        this.text.setHorizontalAlignment(SwingConstants.CENTER);
         this.text.setText(this.file.getName());
+        this.picture.setPreferredSize(new Dimension(
+            Thumbnail.WIDTH, Thumbnail.PICTUREHEIGHT));
+        this.picture.setOpaque(true);
+        this.picture.setHorizontalAlignment(SwingConstants.CENTER);
+        this.createThumbnail();
         
-        
-        this.setBounds(350, 50, 120, 110);
-        this.setLayout(new java.awt.BorderLayout(0,0));
+        this.add(this.text, BorderLayout.SOUTH);
         this.add(this.picture, BorderLayout.CENTER);
-        this.add(this.text, BorderLayout.PAGE_END);
-        this.text.setBorder(null);
-        this.text.setHorizontalAlignment(SwingConstants.CENTER);
-        this.text.setEditable(false);
-        this.picture.setHorizontalAlignment(SwingConstants.CENTER);
-        this.picture.setOpaque(true);
-        /*
-        int tmpx1,tmpy1,tmpx2,tmpy2;
-        tmpx1 = this.getX();
-        tmpy1 = this.getY();
-        tmpx2 = tmpx1 + 150;
-        tmpy2 = tmpy1 + 142;
-        this.centerx = (tmpx1+tmpx2)/2;
-        this.centery = (tmpy1+tmpy2)/2;
-        */
-        
-        //this.setBackground(new java.awt.Color(245,245,245));
-        
-        
-       /*
-        this.text.setText(this.file.getName());
-        this.picture.setVisible(true);
-        this.text.setBorder(null);
-        this.text.setHorizontalAlignment(SwingConstants.CENTER);
-        this.text.setEditable(false);
-        this.picture.setHorizontalAlignment(SwingConstants.CENTER);
-        this.picture.setOpaque(true);
-        this.picture.setBackground(new Color(255,255,255));
-        this.picture.setBounds(0, 0, 100, 100);
-        this.text.setBounds(20,98,50,50);
-        */
-        /*
-        this.text.getDocument().addDocumentListener(new DocumentListener(){
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-              String s = ThumbNail.this.text.getText();
-              System.out.println(s);
-            }
-            @Override
-            public void insertUpdate(DocumentEvent e) {
 
-            }
-            @Override
-            public void removeUpdate(DocumentEvent e) {
+        this.deselect();
+    }
 
-            }
-        }
-        );
-        */
+    public void createThumbnail() {
+        ImageIcon image = new ImageIcon(this.file.getAbsolutePath());
+        Image i = image.getImage();
+        double proportion = (double)image.getIconWidth()/image.getIconHeight();
+        if (image.getIconWidth() > Thumbnail.WIDTH
+                || image.getIconWidth() > Thumbnail.PICTUREHEIGHT)
+            if (proportion > Thumbnail.WIDTH/Thumbnail.PICTUREHEIGHT)
+                i = i.getScaledInstance(
+                    Thumbnail.WIDTH,
+                    (int)(Thumbnail.WIDTH/proportion),
+                    Image.SCALE_FAST);
+            else
+                i = i.getScaledInstance(
+                    (int)(Thumbnail.PICTUREHEIGHT*proportion),
+                    Thumbnail.PICTUREHEIGHT,
+                    Image.SCALE_FAST);
+        image = new ImageIcon(i);
+        this.picture.setIcon(image);
+        image.setImageObserver(this.picture);
+    }
+
+    public void setCenterLocation() {
+            this.centerX = this.getX()+Thumbnail.WIDTH/2;
+            this.centerY = this.getY()+Thumbnail.TOTALHEIGHT/2;
+    }
+    public boolean isInside(int x1, int x2, int y1, int y2) {
+        return Math.max(x1, x2) > this.centerX &&
+            Math.min(x1, x2) < this.centerX &&
+            Math.max(y1, y2) > this.centerY &&
+            Math.min(y1, y2) < this.centerY;
+    }
+
+    public void select() {
+        this.selected = true;
+        this.setBackground(Colors.AZURE);
+        this.picture.setBackground(Colors.AZURE);
+        this.text.setBackground(Colors.AZURE);
+    }
+    public void deselect() {
+        this.selected = false;
+        this.setBackground(Colors.DEFAULT);
+        this.picture.setBackground(Colors.DEFAULT);
+        this.text.setBackground(Colors.DEFAULT);
     }
 }

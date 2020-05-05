@@ -6,7 +6,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
  
-import javax.swing.JFrame;
 import javax.swing.JLabel;
  
 public class RectLabel extends JLabel {
@@ -66,13 +65,14 @@ public class RectLabel extends JLabel {
         g.drawRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x1 - x2),
                 Math.abs(y1 - y2));
     }
- 
+    /*
     public static void main(String[] args) {
         JLabel test = new RectLabel();
  
-        JFrame frame = new JFrame();
+        javax.swing.JFrame frame = new javax.swing.JFrame();
         frame.getContentPane().add(test);
         frame.setSize(300, 300);
         frame.setVisible(true);
     }
+    */
 }

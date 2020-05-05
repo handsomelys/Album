@@ -5,7 +5,13 @@ import java.awt.event.MouseEvent;
 import java.awt.GridBagLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.UIManager;
+
+import dialog.FileRenameDialog;
+import dialog.FilesRenameDialog;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -21,6 +27,8 @@ import viewframe.ViewFrame;
 import operation.DirectoryOperationList;
 import event.CommandEvent;
 import event.CommandListener;
+import event.FileEvent;
+import event.FileListener;
 import util.FileUtils;
 
 public class Main {
@@ -33,10 +41,12 @@ public class Main {
     DirectoryOperationList dol;
     ArrayList<File> selectedPictures;
     ArrayList<File> heldPictures;
-    JScrollPane treepane;
+
     public Main(File directory) {
         // initializing variable
-        MainListener ml = new MainListener();
+        GridBagConstraints gbc = new GridBagConstraints();
+        MainCommandListener mcl = new MainCommandListener();
+        MainFileListener mfl = new MainFileListener();
         this.mainFrame = new JFrame();
         this.tree = new DiskTree();
         this.previewPanel = new PreviewPanel(directory);
@@ -44,20 +54,12 @@ public class Main {
         this.topbar = new TopBar(directory);
         this.dol = new DirectoryOperationList();
         this.selectedPictures = new ArrayList<File>();
+
+        JScrollPane treeScrollPane = new JScrollPane(tree);
+        JScrollPane previewScrollPane = new JScrollPane(previewPanel);
         
         this.updateDirectory(directory);
 
-        // configuring top bar
-        this.configureDirectoryButtons();
-        this.configureFileOperationButtons();
-        this.dol.push(this.directory);
-
-        // assigning listener
-        this.topbar.addListener(ml);
-        this.previewPanel.addMouseListener(new PopupMenuOpenListener());
-        this.tree.addListener(ml);
-        this.popupMenu.addListener(ml);
-        
         // initializing the main frame
         this.mainFrame.setTitle(Text.SOFTWARENAME);
         this.mainFrame.setLayout(new GridBagLayout());
@@ -65,24 +67,47 @@ public class Main {
         this.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.mainFrame.setVisible(true);
 
-        // deploying the component
-        GridBagConstraints gbc = new GridBagConstraints();
+        // configuring components
+        // topbar
+        this.configureDirectoryButtons();
+        this.configureFileOperationButtons();
+        this.dol.push(this.directory);
+        // preview panel
+        if(previewPanel.pictures.size()>20) {
+        	previewScrollPane.getVerticalScrollBar().setVisible(true);
+        	if(previewPanel.pictures.size()%5==0) {
+        		previewPanel.setPreferredSize(new Dimension(750,725*(previewPanel.pictures.size()/5)));
+        		
+        	}else {
+        		previewPanel.setPreferredSize(new Dimension(750,725*(previewPanel.pictures.size()/5+1)));
+        	}
+        	previewScrollPane.getVerticalScrollBar().setValue(0);
+        	
+        } else {
+        	previewPanel.setPreferredSize(new Dimension(700,1550));
+        }
+        //FileUtils.picListener_keyboard(this.mainFrame);
+
+        // assigning listener
+        this.topbar.addListener(mcl);
+        this.previewPanel.addMouseListener(new PopupMenuOpenListener());
+        this.previewPanel.addListener(mfl);
+        this.tree.addListener(mcl);
+        this.popupMenu.addListener(mcl);
+        this.mainFrame.addKeyListener(new CtrlListener());
+
+        // deploying the components
         gbc.fill = GridBagConstraints.BOTH;
         gbc.anchor = GridBagConstraints.CENTER;
-        // deploying disk tree on the left side
+        // deploying disk tree with scroller on the left side
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
         gbc.gridheight = 2;
         gbc.weightx = 4;
         gbc.weighty = 10;
-
-        treepane = new JScrollPane(tree);
-        mainFrame.add(treepane, gbc);	//gundongtiao
-
-       
-
-        // deploying top bar on the above of the right
+        mainFrame.add(treeScrollPane, gbc);
+        // deploying top bar on the above
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
@@ -90,38 +115,23 @@ public class Main {
         gbc.weightx = 6;
         gbc.weighty = 1;
         this.mainFrame.add(this.topbar, gbc);
-        // TODO: deploying preview panel on the center of the right
+        // deploying preview panel with scroller on the center
         gbc.gridx = 1;
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         gbc.gridheight = 1;
         gbc.weightx = 6;
         gbc.weighty = 9;
-        //previewPanel.requestFocus();
-        JScrollPane prepane = new JScrollPane(previewPanel);
-        if(previewPanel.pictures.size()>20) {
-        	prepane.getVerticalScrollBar().setVisible(true);
-        	if(previewPanel.pictures.size()%5==0) {
-        		previewPanel.setPreferredSize(new Dimension(750,725*(previewPanel.pictures.size()/5)));
-        		
-        	}else {
-        		previewPanel.setPreferredSize(new Dimension(750,725*(previewPanel.pictures.size()/5+1)));
-        	}
-        	prepane.getVerticalScrollBar().setValue(0);
-        	
-        }else {
-        	previewPanel.setPreferredSize(new Dimension(700,1550));
-        }
-        //prepane.setVerticalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        //prepane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        //prepane.setAutoscrolls(true);
-        
-       
-        
-        this.mainFrame.add(prepane, gbc);
-        FileUtils.picListener_keyboard(this.mainFrame);
+        this.mainFrame.add(previewScrollPane, gbc);
+
+        this.mainFrame.requestFocus();
     }
 
+    /**
+     * updating the built in directory of the main program, and also invoke the
+     * same method of subcomponents
+     * @param directory the directory that wish to update
+     */
     public void updateDirectory(File directory) {
         if (directory.isDirectory()) {
             this.directory = directory.getAbsoluteFile();
@@ -130,26 +140,40 @@ public class Main {
             this.previewPanel.updateDirectory(this.directory);
         }
     }
+    /**
+     * invoke the updating method of subcomponents.
+     */
     public void updateDirectory() {
         updateDirectory(this.directory);
     }
-    public void configureDirectoryButtons() {
-        File parent = Main.this.directory.getParentFile();
-        if(parent == null)
-            this.topbar.freezeButton("up");
-        else
-            this.topbar.unlockButton("up");
 
-        if (this.dol.getPrior() == null)
-            this.topbar.freezeButton("back");
-        else
-            this.topbar.unlockButton("back");
-        
-        if (this.dol.getNext() == null)
-            this.topbar.freezeButton("forward");
-        else
-            this.topbar.unlockButton("forward");
+    /**
+     * configuring the directory buttons on topbar, depending on the
+     * availability of these functions
+     */
+    public void configureDirectoryButtons() {
+        if (this.topbar != null) {
+            File parent = Main.this.directory.getParentFile();
+            if(parent == null)
+                this.topbar.freezeButton("up");
+            else
+                this.topbar.unlockButton("up");
+
+            if (this.dol.getPrior() == null)
+                this.topbar.freezeButton("back");
+            else
+                this.topbar.unlockButton("back");
+            
+            if (this.dol.getNext() == null)
+                this.topbar.freezeButton("forward");
+            else
+                this.topbar.unlockButton("forward");
+        }
     }
+    /**
+     * configuring the file operation buttons on the topbar, depending on how
+     * much files selected
+     */
     public void configureFileOperationButtons() {
         if (this.selectedPictures == null ||
             this.selectedPictures.size() == 0) {
@@ -159,14 +183,14 @@ public class Main {
         } else {
             this.topbar.unlockButton("open");
             this.topbar.unlockButton("remove");
-            if (this.selectedPictures.size() > 1)
-                this.topbar.freezeButton("slideshow");
-            else
-                this.topbar.unlockButton("slideshow");
         }
+        if (FileUtils.getPicturesCount(this.directory) == 0)
+            this.topbar.freezeButton("slideshow");
+        else
+            this.topbar.unlockButton("slideshow");
     }
 
-    public class MainListener implements CommandListener {
+    public class MainCommandListener implements CommandListener {
         @Override
         public void actionPerformed(CommandEvent ce) {
             String[] command = ce.getCommand();
@@ -222,12 +246,28 @@ public class Main {
             } else if (command[0].equals("paste")) {
                 FileUtils.copyFiles(Main.this.heldPictures,
                     Main.this.directory.getAbsolutePath());
+                Main.this.updateDirectory();
             } else if (command[0].equals("rename")) {
-                JOptionPane.showMessageDialog(Main.this.mainFrame,
-                    "This feature is currently no available.", "tips", 1);
+                if (Main.this.selectedPictures.size() == 1)
+                    new FileRenameDialog(Main.this.selectedPictures.get(0));
+                else if (Main.this.selectedPictures.size() > 1)
+                new FilesRenameDialog(Main.this.selectedPictures);
+                Main.this.updateDirectory();
             }
         }
     }
+    public class MainFileListener implements FileListener {
+        @Override
+        public void actionPerformed(FileEvent fe) {
+            if (fe.getCommand() == "select") {
+                Main.this.selectedPictures = fe.getFiles();
+                Main.this.topbar.setSelectedPicturesCount(Main.this.selectedPictures.size());
+                Main.this.topbar.updateDirectory(Main.this.directory);
+                Main.this.configureFileOperationButtons();
+            }
+        }
+    }
+
     public class PopupMenuOpenListener extends MouseAdapter {
         @Override
         public void mousePressed(MouseEvent e) {
@@ -239,7 +279,23 @@ public class Main {
         }
         private void showPopupMenu(MouseEvent e) {
             if (e.isPopupTrigger())
-                Main.this.popupMenu.show(e.getComponent(),e.getX(),e.getY());
+                Main.this.popupMenu.show(e.getComponent(), e.getX(), e.getY());
+        }
+    }
+    public class CtrlListener implements KeyListener {
+        @Override
+        public void keyTyped(KeyEvent e) {
+            
+        }
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_CONTROL)
+                Main.this.previewPanel.isCtrlPressed = true;
+        }
+        @Override
+        public void keyReleased(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_CONTROL)
+                Main.this.previewPanel.isCtrlPressed = false;
         }
     }
     public static void main(String[] args) {
@@ -252,9 +308,7 @@ public class Main {
         // File d1 = new File("F:\\test__pic\\123");
         // File f1 = new File(d1, "123.jpg");
         File d2 = new File("image");
-        File f2 = new File(d2, "gugugu.jpg");
         Main m = new Main(d2);
-        m.selectedPictures.add(f2);
         m.configureFileOperationButtons();
     }
 }

@@ -275,7 +275,6 @@ public class ViewFrame extends JFrame {
 			autoShow.schedule(task_autoShow, 1000,3000);
 		}
 		this.setVisible(true);
-		
 	}
 	
 	
