@@ -41,7 +41,7 @@ public class Main {
     DirectoryOperationList dol;
     ArrayList<File> selectedPictures;
     ArrayList<File> heldPictures;
-
+    
     public Main(File directory) {
         // initializing variable
         GridBagConstraints gbc = new GridBagConstraints();
@@ -56,10 +56,11 @@ public class Main {
         this.selectedPictures = new ArrayList<File>();
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
+        //JScrollPane treeScrollPane = new JScrollPane();
         JScrollPane previewScrollPane = new JScrollPane(previewPanel);
         
         this.updateDirectory(directory);
-
+       
         // initializing the main frame
         this.mainFrame.setTitle(Text.SOFTWARENAME);
         this.mainFrame.setLayout(new GridBagLayout());
@@ -73,19 +74,24 @@ public class Main {
         this.configureFileOperationButtons();
         this.dol.push(this.directory);
         // preview panel
+        /*
         if(previewPanel.pictures.size()>20) {
         	previewScrollPane.getVerticalScrollBar().setVisible(true);
         	if(previewPanel.pictures.size()%5==0) {
-        		previewPanel.setPreferredSize(new Dimension(750,725*(previewPanel.pictures.size()/5)));
-        		
+        		previewPanel.setPreferredSize(new Dimension(632,125*(previewPanel.pictures.size()/5)));
+        	
         	}else {
-        		previewPanel.setPreferredSize(new Dimension(750,725*(previewPanel.pictures.size()/5+1)));
+        		previewPanel.setPreferredSize(new Dimension(632,125*(previewPanel.pictures.size()/5+1)));
         	}
         	previewScrollPane.getVerticalScrollBar().setValue(0);
         	
-        } else {
-        	previewPanel.setPreferredSize(new Dimension(700,1550));
+        } else if(previewPanel.pictures.size()>=5&&previewPanel.pictures.size()<20){
+        	//previewPanel.setPreferredSize(new Dimension(previewPanel.pictures.size()*180,0));
+        	previewPanel.setSize(new Dimension(830,725));
+        }	else {
+        	previewPanel.setPreferredSize(new Dimension(previewPanel.pictures.size()*166,previewPanel.pictures.size()/5*166));
         }
+        */
         //FileUtils.picListener_keyboard(this.mainFrame);
 
         // assigning listener
@@ -104,8 +110,15 @@ public class Main {
         gbc.gridy = 0;
         gbc.gridwidth = 1;
         gbc.gridheight = 2;
-        gbc.weightx = 4;
+        gbc.weightx = 2;
         gbc.weighty = 10;
+        //tree.setPreferredSize(new Dimension(50,1000));
+        //tree.setPreferredSize(tree.getMaximumSize());
+        treeScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
+        treeScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        treeScrollPane.setPreferredSize(new Dimension(10,100000));	
+        
         mainFrame.add(treeScrollPane, gbc);
         // deploying top bar on the above
         gbc.gridx = 1;
@@ -122,8 +135,9 @@ public class Main {
         gbc.gridheight = 1;
         gbc.weightx = 6;
         gbc.weighty = 9;
+        //previewScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         this.mainFrame.add(previewScrollPane, gbc);
-
+        System.out.println(previewPanel.getSize());
         this.mainFrame.requestFocus();
     }
 

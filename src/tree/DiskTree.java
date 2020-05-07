@@ -1,8 +1,10 @@
 package tree;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
@@ -26,6 +28,7 @@ public class DiskTree extends JTree implements CommandSource {
         node.explore();
         this.setModel(new DefaultTreeModel(node));
         this.addTreeExpansionListener(new DiskTreeExpansionListener());
+       
     }
 
     public class DiskTreeExpansionListener implements TreeExpansionListener {
@@ -40,6 +43,8 @@ public class DiskTree extends JTree implements CommandSource {
             }
             DiskTree.this.notifyAll(new CommandEvent(DiskTree.this,
                 "switch", node.getString()));
+            
+            //DiskTree.this.setPreferredSize(getPreferredScrollableViewportSize());
         }
         @Override
         public void treeCollapsed(TreeExpansionEvent event) {
@@ -60,4 +65,5 @@ public class DiskTree extends JTree implements CommandSource {
         for (CommandListener cl: listeners)
             cl.actionPerformed(ce);
     }
+    
 }

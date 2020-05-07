@@ -3,8 +3,11 @@ package preview;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,7 +33,9 @@ public class PreviewPanel extends JPanel implements FileSource {
     public int ex; // end x
     public int ey; // end y
     protected HashSet<FileListener> listeners;
-
+    public JScrollPane previewScrollPane = new JScrollPane(this);
+    private static final int WIDTH1 = 632;
+    
     public PreviewPanel(File directory) {
         this.setBackground(Colors.DEFAULT);
         this.directory = directory.getAbsoluteFile();
@@ -44,6 +49,21 @@ public class PreviewPanel extends JPanel implements FileSource {
         this.addMouseMotionListener(new picListener3());
         this.addMouseListener(new CancelSelectListener());
         updateDirectory(this.directory);
+    }
+    public void updateBound() {
+    	if(this.pictures.size()>20) {
+        	previewScrollPane.getVerticalScrollBar().setVisible(true);
+        	if(this.pictures.size()%5==0) {
+        		this.setPreferredSize(new Dimension(780,(725*(this.pictures.size()/5)+50)));
+        		
+        	}else {
+        		this.setPreferredSize(new Dimension(780,(725*(this.pictures.size()/5+1)+50)));
+        	}
+        	previewScrollPane.getVerticalScrollBar().setValue(0);
+        	
+        } else {
+        	this.setPreferredSize(new Dimension(780,(725*this.pictures.size()/5)+50));
+        }
     }
     public void updateDirectory(File directory) {
         this.setLayout(null);
@@ -67,11 +87,39 @@ public class PreviewPanel extends JPanel implements FileSource {
         }
         
         for(int i=0;i<this.pictures.size();i++) {
-                this.pictures.get(i).setBounds(i%5*175,i/5*150,150,142);
+                this.pictures.get(i).setBounds(i%5*175+50,i/5*150+30,120,110);
         }
         this.addListenerForThumbnails();
         
+        if(this.pictures.size()>15) {
+        	previewScrollPane.getVerticalScrollBar().setVisible(true);
+        	if(this.pictures.size()%5==0) {
+        		this.setPreferredSize(new Dimension(632,158*(this.pictures.size()/5)));
+        	
+        	}else {
+        		this.setPreferredSize(new Dimension(632,158*(this.pictures.size()/5+1)));
+        	}
+        	previewScrollPane.getVerticalScrollBar().setValue(0);
+        	
+        } else if(this.pictures.size()>=5&&this.pictures.size()<15){
+        	//previewPanel.setPreferredSize(new Dimension(previewPanel.pictures.size()*180,0));
+        	this.setSize(new Dimension(830,725));
+        }	else {
+        	this.setPreferredSize(new Dimension(this.pictures.size()*166,this.pictures.size()/5*158));
+        }
+        
+        /*
+        previewScrollPane.getVerticalScrollBar().setVisible(true);
+    	if(this.pictures.size()%5==0) {
+    		this.setPreferredSize(new Dimension(632,158*(this.pictures.size()/5)));
+    	
+    	}else {
+    		this.setPreferredSize(new Dimension(632,158*(this.pictures.size()/5+1)));
+    	}
+    	previewScrollPane.getVerticalScrollBar().setValue(0);
+    	*/
         this.setCenterLocation();
+        //updateBound();
         //this.printLocation();
     }
     
@@ -230,4 +278,8 @@ public class PreviewPanel extends JPanel implements FileSource {
         for (FileListener fl: listeners)
             fl.actionPerformed(fe);
     }
+	public JScrollPane getPreviewScrollPane() {
+		return previewScrollPane;
+	}
+    
 }
