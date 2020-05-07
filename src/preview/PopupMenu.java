@@ -3,8 +3,8 @@ package preview;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.awt.event.ActionEvent;
+import java.util.HashSet;
 
 import event.CommandEvent;
 import event.CommandListener;
@@ -14,41 +14,39 @@ import main.Text;
 public class PopupMenu extends JPopupMenu implements CommandSource {
     private static final long serialVersionUID = 1L;
 
-    ArrayList<CommandListener> listeners;
+    public String type;
+    protected JMenuItem[] items;
+    protected HashSet<CommandListener> listeners;
 
-    JMenuItem open;
-    JMenuItem copy;
-    JMenuItem paste;
-    JMenuItem rename;
-    JMenuItem remove;
-    JMenuItem slideshow;
-
-    public PopupMenu() {
-        super();
-        this.listeners = new ArrayList<CommandListener>();
-        this.open = new JMenuItem(Text.OPEN);
-        this.copy = new JMenuItem(Text.COPY);
-        this.paste = new JMenuItem(Text.PASTE);
-        this.rename = new JMenuItem(Text.RENAME);
-        this.remove = new JMenuItem(Text.REMOVE);
-        this.slideshow = new JMenuItem(Text.SLIDESHOW);
-
+    public PopupMenu(String type) {
+        this.type = type;
+        this.listeners = new HashSet<CommandListener>();
         ItemListener il = new ItemListener();
-        this.open.addActionListener(il);
-        this.copy.addActionListener(il);
-        this.paste.addActionListener(il);
-        this.rename.addActionListener(il);
-        this.remove.addActionListener(il);
-        this.slideshow.addActionListener(il);
-
-        this.add(this.open);
-        this.add(this.slideshow);
-        this.addSeparator();
-        this.add(this.copy);
-        this.add(this.paste);
-        this.addSeparator();
-        this.add(this.rename);
-        this.add(this.remove);
+        if (this.type.equals("panel")) {
+            // panel popup menu
+            this.items = new JMenuItem[3];
+            this.items[0] = new JMenuItem(Text.SLIDESHOW);
+            this.items[1] = new JMenuItem(Text.REFRESH);
+            this.items[2] = new JMenuItem(Text.PASTE);
+        } else if (this.type.equals("thumbnail")) {
+            // thumbnail popup menu
+            this.items = new JMenuItem[8];
+            this.items[0] = new JMenuItem(Text.OPEN);
+            this.items[1] = new JMenuItem(Text.SLIDESHOW);
+            this.items[2] = null;
+            this.items[3] = new JMenuItem(Text.COPY);
+            this.items[4] = new JMenuItem(Text.PASTE);
+            this.items[5] = new JMenuItem(Text.RENAME);
+            this.items[6] = null;
+            this.items[7] = new JMenuItem(Text.REMOVE);
+        }
+        for (JMenuItem jmi: this.items)
+            if (jmi == null)
+                this.addSeparator();
+            else {
+                this.add(jmi);
+                jmi.addActionListener(il);
+            }
     }
 
     private class ItemListener implements ActionListener {
@@ -56,26 +54,23 @@ public class PopupMenu extends JPopupMenu implements CommandSource {
         public void actionPerformed(ActionEvent e) {
             String command = e.getActionCommand();
             if (command.equals(Text.OPEN)) {
-                PopupMenu.this.notifyAll(
-                    new CommandEvent(PopupMenu.this, "open"));
+                PopupMenu.this.notifyAll(new CommandEvent(PopupMenu.this, "open"));
             } else if (command.equals(Text.SLIDESHOW)) {
-                PopupMenu.this.notifyAll(
-                    new CommandEvent(PopupMenu.this, "slideshow"));
+                PopupMenu.this.notifyAll(new CommandEvent(PopupMenu.this, "slideshow"));
             } else if (command.equals(Text.COPY)) {
-                PopupMenu.this.notifyAll(
-                    new CommandEvent(PopupMenu.this, "copy"));
+                PopupMenu.this.notifyAll(new CommandEvent(PopupMenu.this, "copy"));
             } else if (command.equals(Text.PASTE)) {
-                PopupMenu.this.notifyAll(
-                    new CommandEvent(PopupMenu.this, "paste"));
+                PopupMenu.this.notifyAll(new CommandEvent(PopupMenu.this, "paste"));
             } else if (command.equals(Text.REMOVE)) {
-                PopupMenu.this.notifyAll(
-                    new CommandEvent(PopupMenu.this, "remove"));
+                PopupMenu.this.notifyAll(new CommandEvent(PopupMenu.this, "remove"));
             } else if (command.equals(Text.RENAME)) {
-                PopupMenu.this.notifyAll(
-                    new CommandEvent(PopupMenu.this, "rename"));
+                PopupMenu.this.notifyAll(new CommandEvent(PopupMenu.this, "rename"));
+            } else if (command.equals(Text.REFRESH)) {
+                PopupMenu.this.notifyAll(new CommandEvent(PopupMenu.this, "refresh"));
             }
         }
     }
+    // command event source method
     @Override
     public void addListener(CommandListener cl) {
         this.listeners.add(cl);

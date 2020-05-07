@@ -1,7 +1,5 @@
 package main;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.GridBagLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -22,7 +20,6 @@ import java.util.ArrayList;
 import tree.DiskTree;
 import topbar.TopBar;
 import preview.PreviewPanel;
-import preview.PopupMenu;
 import viewframe.ViewFrame;
 import operation.DirectoryOperationList;
 import event.CommandEvent;
@@ -36,7 +33,6 @@ public class Main {
     JFrame mainFrame;
     DiskTree tree;
     PreviewPanel previewPanel;
-    PopupMenu popupMenu;
     TopBar topbar;
     DirectoryOperationList dol;
     ArrayList<File> selectedPictures;
@@ -44,16 +40,17 @@ public class Main {
 
     public Main(File directory) {
         // initializing variable
-        GridBagConstraints gbc = new GridBagConstraints();
-        MainCommandListener mcl = new MainCommandListener();
-        MainFileListener mfl = new MainFileListener();
+        this.directory = directory.getAbsoluteFile();
         this.mainFrame = new JFrame();
         this.tree = new DiskTree();
         this.previewPanel = new PreviewPanel(directory);
-        this.popupMenu = new PopupMenu();
         this.topbar = new TopBar(directory);
         this.dol = new DirectoryOperationList();
         this.selectedPictures = new ArrayList<File>();
+        this.heldPictures = new ArrayList<File>();
+        GridBagConstraints gbc = new GridBagConstraints();
+        MainCommandListener mcl = new MainCommandListener();
+        MainFileListener mfl = new MainFileListener();
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
         JScrollPane previewScrollPane = new JScrollPane(previewPanel);
@@ -90,10 +87,9 @@ public class Main {
 
         // assigning listener
         this.topbar.addListener(mcl);
-        this.previewPanel.addMouseListener(new PopupMenuOpenListener());
         this.previewPanel.addListener(mfl);
+        this.previewPanel.addListener(mcl);
         this.tree.addListener(mcl);
-        this.popupMenu.addListener(mcl);
         this.mainFrame.addKeyListener(new CtrlListener());
 
         // deploying the components
@@ -253,6 +249,8 @@ public class Main {
                 else if (Main.this.selectedPictures.size() > 1)
                 new FilesRenameDialog(Main.this.selectedPictures);
                 Main.this.updateDirectory();
+            } else if (command[0].equals("refresh")) {
+                Main.this.updateDirectory();
             }
         }
     }
@@ -268,20 +266,6 @@ public class Main {
         }
     }
 
-    public class PopupMenuOpenListener extends MouseAdapter {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            showPopupMenu(e);
-        }
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            showPopupMenu(e);
-        }
-        private void showPopupMenu(MouseEvent e) {
-            if (e.isPopupTrigger())
-                Main.this.popupMenu.show(e.getComponent(), e.getX(), e.getY());
-        }
-    }
     public class CtrlListener implements KeyListener {
         @Override
         public void keyTyped(KeyEvent e) {
