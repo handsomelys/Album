@@ -54,7 +54,8 @@ public class Main {
         this.topbar = new TopBar(directory);
         this.dol = new DirectoryOperationList();
         this.selectedPictures = new ArrayList<File>();
-
+        final int TREEWIDTH = 20;
+        final int TREEHEIGHT = 100000;
         JScrollPane treeScrollPane = new JScrollPane(tree);
         //JScrollPane treeScrollPane = new JScrollPane();
         JScrollPane previewScrollPane = new JScrollPane(previewPanel);
@@ -117,7 +118,7 @@ public class Main {
         treeScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         
         treeScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        treeScrollPane.setPreferredSize(new Dimension(10,100000));	
+        treeScrollPane.setPreferredSize(new Dimension(TREEWIDTH,TREEHEIGHT));	
         
         mainFrame.add(treeScrollPane, gbc);
         // deploying top bar on the above

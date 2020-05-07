@@ -35,7 +35,17 @@ public class PreviewPanel extends JPanel implements FileSource {
     protected HashSet<FileListener> listeners;
     public JScrollPane previewScrollPane = new JScrollPane(this);
     private static final int WIDTH1 = 632;
-    
+    private static final int HEIGHT1 = 158;
+    private static final int WIDTH2 = 166;
+    private static final int WIDTH3 = 830;
+    private static final int HEIGHT3 = 725;
+    private static final int THUMBNAILX = 175;
+    private static final int THUMBNAILY = 150;
+    private static final int THUMBNAILWIDTH = 120;
+    private static final int THUMBNAILHEIGHT = 110;
+    private static final int PIC_PER_ROW = 5;
+    private static final int EXTEND_X = 50;
+    private static final int EXTEND_Y = 30;
     public PreviewPanel(File directory) {
         this.setBackground(Colors.DEFAULT);
         this.directory = directory.getAbsoluteFile();
@@ -49,21 +59,6 @@ public class PreviewPanel extends JPanel implements FileSource {
         this.addMouseMotionListener(new picListener3());
         this.addMouseListener(new CancelSelectListener());
         updateDirectory(this.directory);
-    }
-    public void updateBound() {
-    	if(this.pictures.size()>20) {
-        	previewScrollPane.getVerticalScrollBar().setVisible(true);
-        	if(this.pictures.size()%5==0) {
-        		this.setPreferredSize(new Dimension(780,(725*(this.pictures.size()/5)+50)));
-        		
-        	}else {
-        		this.setPreferredSize(new Dimension(780,(725*(this.pictures.size()/5+1)+50)));
-        	}
-        	previewScrollPane.getVerticalScrollBar().setValue(0);
-        	
-        } else {
-        	this.setPreferredSize(new Dimension(780,(725*this.pictures.size()/5)+50));
-        }
     }
     public void updateDirectory(File directory) {
         this.setLayout(null);
@@ -87,40 +82,30 @@ public class PreviewPanel extends JPanel implements FileSource {
         }
         
         for(int i=0;i<this.pictures.size();i++) {
-                this.pictures.get(i).setBounds(i%5*175+50,i/5*150+30,120,110);
+                this.pictures.get(i).setBounds(i%PIC_PER_ROW*THUMBNAILX+EXTEND_X,i/PIC_PER_ROW*THUMBNAILY+EXTEND_Y,THUMBNAILWIDTH,THUMBNAILHEIGHT);
         }
         this.addListenerForThumbnails();
         
-        if(this.pictures.size()>15) {
+        if(this.pictures.size()>PIC_PER_ROW*3) {
         	previewScrollPane.getVerticalScrollBar().setVisible(true);
-        	if(this.pictures.size()%5==0) {
-        		this.setPreferredSize(new Dimension(632,158*(this.pictures.size()/5)));
+        	if(this.pictures.size()%PIC_PER_ROW==0) {
+        		this.setPreferredSize(new Dimension(WIDTH1,HEIGHT1*(this.pictures.size()/PIC_PER_ROW)));
         	
         	}else {
-        		this.setPreferredSize(new Dimension(632,158*(this.pictures.size()/5+1)));
+        		this.setPreferredSize(new Dimension(WIDTH1,HEIGHT1*(this.pictures.size()/PIC_PER_ROW+1)));
         	}
         	previewScrollPane.getVerticalScrollBar().setValue(0);
         	
-        } else if(this.pictures.size()>=5&&this.pictures.size()<15){
-        	//previewPanel.setPreferredSize(new Dimension(previewPanel.pictures.size()*180,0));
-        	this.setSize(new Dimension(830,725));
+        } else if(this.pictures.size()>=PIC_PER_ROW&&this.pictures.size()<PIC_PER_ROW*3){
+        	
+        	this.setSize(new Dimension(WIDTH3,HEIGHT3));
         }	else {
-        	this.setPreferredSize(new Dimension(this.pictures.size()*166,this.pictures.size()/5*158));
+        	this.setPreferredSize(new Dimension(this.pictures.size()*WIDTH2,this.pictures.size()/PIC_PER_ROW*HEIGHT1));
         }
         
-        /*
-        previewScrollPane.getVerticalScrollBar().setVisible(true);
-    	if(this.pictures.size()%5==0) {
-    		this.setPreferredSize(new Dimension(632,158*(this.pictures.size()/5)));
-    	
-    	}else {
-    		this.setPreferredSize(new Dimension(632,158*(this.pictures.size()/5+1)));
-    	}
-    	previewScrollPane.getVerticalScrollBar().setValue(0);
-    	*/
+        
         this.setCenterLocation();
-        //updateBound();
-        //this.printLocation();
+        
     }
     
     protected void panintComponent(Graphics g) {
