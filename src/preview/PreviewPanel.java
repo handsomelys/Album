@@ -11,6 +11,13 @@ import javax.swing.JScrollPane;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import event.FileEvent;
 import event.FileListener;
@@ -24,6 +31,8 @@ public class PreviewPanel extends JPanel implements FileSource {
 
     public ArrayList<Thumbnail> pictures;
     public ArrayList<Thumbnail> selectedPictures;
+    public ArrayList<File>	picFiles;
+
     public File directory;
     public boolean isFileSelected;
     public boolean isCtrlPressed;
@@ -34,6 +43,8 @@ public class PreviewPanel extends JPanel implements FileSource {
     public int ey; // end y
     protected HashSet<FileListener> listeners;
     public JScrollPane previewScrollPane = new JScrollPane(this);
+    private ThreadPoolExecutor pool = null;
+    
     private static final int WIDTH1 = 632;
     private static final int HEIGHT1 = 158;
     private static final int WIDTH2 = 166;
@@ -54,7 +65,7 @@ public class PreviewPanel extends JPanel implements FileSource {
         this.isFileSelected = false;
         this.isCtrlPressed = false;
         this.listeners = new HashSet<FileListener>();
-
+        this.picFiles = new ArrayList<File>();
         this.addMouseListener(new RectangularSelectListener());
         this.addMouseMotionListener(new picListener3());
         this.addMouseListener(new CancelSelectListener());
@@ -64,26 +75,87 @@ public class PreviewPanel extends JPanel implements FileSource {
         this.setLayout(null);
         this.directory = directory;
         // remove old
+        this.picFiles.clear();
+        System.out.println("init size:"+this.pictures.size());
         if (this.pictures.size() > 0) {
             for (Thumbnail tb : this.pictures) {
                 this.remove(tb);
             }
             this.pictures.clear();
         }
+        
         // add new
+        
+        /*
         for (File f : this.directory.listFiles()) {
             if (FileUtils.isPicture(f)) {
                 Thumbnail tn = new Thumbnail(f);
                 this.pictures.add(tn);
             }
         }
+        
+        
         for (Thumbnail tb : this.pictures) {
             this.add(tb);
         }
+        */
+
+        ExecutorService exector = Executors.newFixedThreadPool(6);
         
+        for (File f : this.directory.listFiles()) {
+            if (FileUtils.isPicture(f)) {
+                this.picFiles.add(f);
+            }
+        }
+        
+        
+        int temp = this.picFiles.size();
+        
+        ArrayList<Thumbnail>	tmparray1 = new ArrayList<Thumbnail>();
+        ArrayList<Thumbnail>	tmparray2 = new ArrayList<Thumbnail>();
+        ArrayList<Thumbnail>	tmparray3 = new ArrayList<Thumbnail>();
+        ArrayList<Thumbnail>	tmparray4 = new ArrayList<Thumbnail>();
+        ArrayList<Thumbnail>	tmparray5 = new ArrayList<Thumbnail>();
+        ArrayList<Thumbnail>	tmparray6 = new ArrayList<Thumbnail>();
+         
+        Runnable threading1 = new PicThreading(this.picFiles,this,tmparray1,this.directory,0,temp/6);
+        Runnable threading2 = new PicThreading(this.picFiles,this,tmparray2,this.directory,temp/6,temp/6*2);
+        Runnable threading3 = new PicThreading(this.picFiles,this,tmparray3,this.directory,temp/6*2,temp/6*3);
+        Runnable threading4 = new PicThreading(this.picFiles,this,tmparray4,this.directory,temp/6*3,temp/6*4);
+        Runnable threading5 = new PicThreading(this.picFiles,this,tmparray5,this.directory,temp/6*4,temp/6*5);
+        Runnable threading6 = new PicThreading(this.picFiles,this,tmparray6,this.directory,temp/6*5,temp);
+        exector.submit(threading1);
+        exector.submit(threading2);
+        exector.submit(threading3);
+        exector.submit(threading4);
+        exector.submit(threading5);
+        exector.submit(threading6);
+        exector.shutdown();
+        while(true) {
+        	if(exector.isTerminated()) {
+        		System.out.println("all threading is done");
+        		break;
+        	}
+        	
+        }
+
+        this.pictures.addAll(tmparray1);
+        this.pictures.addAll(tmparray2);
+        this.pictures.addAll(tmparray3);
+        this.pictures.addAll(tmparray4);
+        this.pictures.addAll(tmparray5);
+        this.pictures.addAll(tmparray6);
+        System.out.println("tmparray1:"+tmparray1.size());
+        System.out.println("tmparray2:"+tmparray2.size());
+        System.out.println("tmparray3:"+tmparray3.size());
+        System.out.println("tmparray4:"+tmparray4.size());
+        System.out.println("tmparray5:"+tmparray5.size());
+        System.out.println("tmparray6:"+tmparray6.size());
+        System.out.println("thispictures:"+this.pictures.size());
         for(int i=0;i<this.pictures.size();i++) {
                 this.pictures.get(i).setBounds(i%PIC_PER_ROW*THUMBNAILX+EXTEND_X,i/PIC_PER_ROW*THUMBNAILY+EXTEND_Y,THUMBNAILWIDTH,THUMBNAILHEIGHT);
         }
+        
         this.addListenerForThumbnails();
         
         if(this.pictures.size()>PIC_PER_ROW*3) {

@@ -33,7 +33,9 @@ public class Thumbnail extends JPanel {
 	public boolean isSelected() {
         return this.selected;
     }
-
+	public Thumbnail() {
+		this(null);
+	}
     public Thumbnail(File file) {
         // initializing variables
         this.file = file.getAbsoluteFile();
