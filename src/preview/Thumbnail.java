@@ -17,8 +17,8 @@ import main.Colors;
 public class Thumbnail extends JPanel {
     private static final long serialVersionUID = 1L;
 
-    public static final int WIDTH = 150;
-    public static final int PICTUREHEIGHT = 130;
+    public static final int WIDTH = 110;
+    public static final int PICTUREHEIGHT = 90;
     public static final int TEXTHEIGHT = 20;
     public static final int TOTALHEIGHT =
         Thumbnail.PICTUREHEIGHT+Thumbnail.TEXTHEIGHT;

@@ -131,6 +131,7 @@ public class PreviewPanel extends JPanel implements FileSource {
         exector.submit(threading5);
         exector.submit(threading6);
         exector.shutdown();
+       
         while(true) {
         	if(exector.isTerminated()) {
         		System.out.println("all threading is done");
@@ -138,7 +139,7 @@ public class PreviewPanel extends JPanel implements FileSource {
         	}
         	
         }
-
+        
         this.pictures.addAll(tmparray1);
         this.pictures.addAll(tmparray2);
         this.pictures.addAll(tmparray3);
