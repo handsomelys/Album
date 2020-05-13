@@ -96,8 +96,11 @@ public class FileUtils {
      * @param file file to delete
      */
     public static void removeFile(File file) {
-        if (file.exists() && file.isFile())
-            file.delete();
+        if (file.exists() && file.isFile()) {
+        	
+        	file.delete();
+        }
+            
     }
     /**
      * @param files files to delete
