@@ -67,6 +67,7 @@ public class Thumbnail extends JPanel {
 
         // configuring default color
         this.deselect();
+        this.repaint();
     }
 
     public void createThumbnail() {

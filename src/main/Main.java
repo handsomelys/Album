@@ -1,32 +1,29 @@
 package main;
 
-import java.awt.GridBagLayout;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import javax.swing.UIManager;
-
-import dialog.FileRenameDialog;
-import dialog.FilesRenameDialog;
-
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.UIManager;
 
 import java.io.File;
 import java.util.ArrayList;
 
-import tree.DiskTree;
-import topbar.TopBar;
-import preview.PreviewPanel;
-import viewframe.ViewFrame;
-import operation.DirectoryOperationList;
+import dialog.FileRenameDialog;
+import dialog.FilesRenameDialog;
 import event.CommandEvent;
 import event.CommandListener;
 import event.FileEvent;
 import event.FileListener;
+import operation.DirectoryOperationList;
+import preview.PreviewPanel;
+import tree.DiskTree;
+import topbar.TopBar;
 import util.FileUtils;
+import viewframe.ViewFrame;
 
 public class Main {
     File directory;
@@ -48,14 +45,11 @@ public class Main {
         this.dol = new DirectoryOperationList();
         this.selectedPictures = new ArrayList<File>();
         this.heldPictures = new ArrayList<File>();
+        
         GridBagConstraints gbc = new GridBagConstraints();
         MainCommandListener mcl = new MainCommandListener();
         MainFileListener mfl = new MainFileListener();
 
-        final int TREEWIDTH = 20;
-        final int TREEHEIGHT = 100000;
-        JScrollPane treeScrollPane = new JScrollPane(tree);
-        //JScrollPane treeScrollPane = new JScrollPane();
         JScrollPane previewScrollPane = new JScrollPane(previewPanel);
         
         this.updateDirectory(directory);
@@ -63,7 +57,7 @@ public class Main {
         // initializing the main frame
         this.mainFrame.setTitle(Text.SOFTWARENAME);
         this.mainFrame.setLayout(new GridBagLayout());
-        this.mainFrame.setBounds(100, 100, 1200, 600);
+        this.mainFrame.setBounds(100, 100, 1200, 800);
         this.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.mainFrame.setVisible(true);
 
@@ -72,26 +66,6 @@ public class Main {
         this.configureDirectoryButtons();
         this.configureFileOperationButtons();
         this.dol.push(this.directory);
-        // preview panel
-        /*
-        if(previewPanel.pictures.size()>20) {
-        	previewScrollPane.getVerticalScrollBar().setVisible(true);
-        	if(previewPanel.pictures.size()%5==0) {
-        		previewPanel.setPreferredSize(new Dimension(632,125*(previewPanel.pictures.size()/5)));
-        	
-        	}else {
-        		previewPanel.setPreferredSize(new Dimension(632,125*(previewPanel.pictures.size()/5+1)));
-        	}
-        	previewScrollPane.getVerticalScrollBar().setValue(0);
-        	
-        } else if(previewPanel.pictures.size()>=5&&previewPanel.pictures.size()<20){
-        	//previewPanel.setPreferredSize(new Dimension(previewPanel.pictures.size()*180,0));
-        	previewPanel.setSize(new Dimension(830,725));
-        }	else {
-        	previewPanel.setPreferredSize(new Dimension(previewPanel.pictures.size()*166,previewPanel.pictures.size()/5*166));
-        }
-        */
-        //FileUtils.picListener_keyboard(this.mainFrame);
 
         // assigning listener
         this.topbar.addListener(mcl);
@@ -110,14 +84,7 @@ public class Main {
         gbc.gridheight = 2;
         gbc.weightx = 2;
         gbc.weighty = 10;
-        //tree.setPreferredSize(new Dimension(50,1000));
-        //tree.setPreferredSize(tree.getMaximumSize());
-        treeScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        
-        treeScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        treeScrollPane.setPreferredSize(new Dimension(TREEWIDTH,TREEHEIGHT));	
-        
-        mainFrame.add(treeScrollPane, gbc);
+        mainFrame.add(this.tree.getScrollPane(), gbc);
         // deploying top bar on the above
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -135,7 +102,7 @@ public class Main {
         gbc.weighty = 9;
         //previewScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         this.mainFrame.add(previewScrollPane, gbc);
-        System.out.println(previewPanel.getSize());
+        //System.out.println(previewPanel.getSize());
         this.mainFrame.requestFocus();
     }
 
@@ -150,6 +117,7 @@ public class Main {
             this.topbar.setSelectedPicturesCount(this.selectedPictures.size());
             this.topbar.updateDirectory(this.directory);
             this.previewPanel.updateDirectory(this.directory);
+            this.mainFrame.repaint();
         }
     }
     /**
@@ -264,10 +232,12 @@ public class Main {
                     new FileRenameDialog(Main.this.selectedPictures.get(0));
                 else if (Main.this.selectedPictures.size() > 1)
                 new FilesRenameDialog(Main.this.selectedPictures);
-                Main.this.updateDirectory();
+                //Main.this.updateDirectory();
             } else if (command[0].equals("refresh")) {
+                Main.this.selectedPictures.clear();
                 Main.this.updateDirectory();
             }
+            Main.this.mainFrame.requestFocus();
         }
     }
     public class MainFileListener implements FileListener {

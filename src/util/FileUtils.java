@@ -110,7 +110,8 @@ public class FileUtils {
             FileUtils.removeFile(file);
     }
     /**
-     * obvious
+     * using regular expression to identify whether the file is picture or not
+     * @param f file to identify
      */
     public static boolean isPicture(File f) {
         String regex = ".*.(jpg|jpeg|png|bmp|gif)$";
@@ -118,7 +119,8 @@ public class FileUtils {
         return p.matcher(f.getName()).matches();
     }
     /**
-     * obvious
+     * get picture count in specify directory by using isPicture()
+     * @param directory the directory
      */
     public static int getPicturesCount(File directory) {
         int count = 0;
@@ -127,7 +129,8 @@ public class FileUtils {
         return count;
     }
     /**
-     * obvious
+     * get total picture size in a specify directory
+     * @param directory the directory
      */
     public static long getPicturesSize(File directory) {
         long total = 0;
@@ -136,7 +139,8 @@ public class FileUtils {
         return total;
     }
     /**
-     * obvious
+     * turn size in long form to string form, like 1.2KB, 5.3MB
+     * @param size the size
      */
     public static String sizeToString(long size) {
         String[] sign = {"Byte", "KB", "MB", "GB", "TB"};
@@ -149,7 +153,8 @@ public class FileUtils {
         return String.format("%.2f%s", length, sign[index]);
     }
     /**
-     * obvious
+     * as the function name
+     * @param file the file
      */
     public static String getFileNameNoExtension(File file) {
         String name = file.getName();

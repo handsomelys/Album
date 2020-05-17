@@ -11,13 +11,8 @@ import javax.swing.JScrollPane;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import event.CommandEvent;
 import event.CommandListener;
@@ -30,27 +25,6 @@ import util.FileUtils;
 
 public class PreviewPanel extends JPanel implements FileSource, CommandSource {
     private static final long serialVersionUID = 1L;
-
-    public File directory;
-    public ArrayList<Thumbnail> pictures;
-    public ArrayList<Thumbnail> selectedPictures;
-    public PopupMenu panelPopupMenu;
-    public PopupMenu thumbnailPopupMenu;
-    public ArrayList<File>	picFiles;
-
-    public boolean isFileSelected;
-    public boolean isCtrlPressed;
-    public boolean isInSelection = true;
-    public int sx; // start x
-    public int sy; // start y
-    public int ex; // end x
-    public int ey; // end y
-    protected HashSet<FileListener> FileListeners;
-    protected HashSet<CommandListener> CommandListeners;
-
-    protected HashSet<FileListener> listeners;
-    public JScrollPane previewScrollPane = new JScrollPane(this);
-    private ThreadPoolExecutor pool = null;
     
     private static final int WIDTH1 = 632;
     private static final int HEIGHT1 = 158;
@@ -64,84 +38,96 @@ public class PreviewPanel extends JPanel implements FileSource, CommandSource {
     private static final int PIC_PER_ROW = 5;
     private static final int EXTEND_X = 50;
     private static final int EXTEND_Y = 30;
+
+    public File directory;
+    public ArrayList<File>	picFiles;
+    public ArrayList<Thumbnail> pictures;
+    public ArrayList<Thumbnail> selectedPictures;
+    public boolean isFileSelected;
+    public boolean isCtrlPressed;
+    public boolean isInSelection;
+    public int sx; // start x
+    public int sy; // start y
+    public int ex; // end x
+    public int ey; // end y
+
+    public PopupMenu panelPopupMenu;
+    public PopupMenu thumbnailPopupMenu;
+    public JScrollPane previewScrollPane = new JScrollPane(this);
+
+    protected HashSet<FileListener> FileListeners;
+    protected HashSet<CommandListener> CommandListeners;
+
     public PreviewPanel(File directory) {
-        this.setBackground(Colors.DEFAULT);
-        this.directory = directory.getAbsoluteFile();
-        this.pictures = new ArrayList<Thumbnail>();
-        this.selectedPictures = new ArrayList<Thumbnail>();
-        this.panelPopupMenu = new PopupMenu("panel");
-        this.thumbnailPopupMenu = new PopupMenu("thumbnail");
         this.isFileSelected = false;
         this.isCtrlPressed = false;
+        this.isInSelection = false;
+        this.sx = 0;
+        this.sy = 0;
+        this.ex = 0;
+        this.ey = 0;
+        this.directory = directory.getAbsoluteFile();
+        this.picFiles = new ArrayList<File>();
+        this.pictures = new ArrayList<Thumbnail>();
+        this.selectedPictures = new ArrayList<Thumbnail>();
         this.FileListeners = new HashSet<FileListener>();
         this.CommandListeners = new HashSet<CommandListener>();
 
-        this.listeners = new HashSet<FileListener>();
-        this.picFiles = new ArrayList<File>();
+        this.panelPopupMenu = new PopupMenu("panel");
+        this.thumbnailPopupMenu = new PopupMenu("thumbnail");
+
         this.addMouseListener(new RectangularSelectListener());
         this.addMouseMotionListener(new InSelectionListener());
         this.addMouseListener(new CancelSelectListener());
         this.addMouseListener(new PopupMenuOpenListener());
         this.panelPopupMenu.addListener(new PopupMenuCommandListener());
         this.thumbnailPopupMenu.addListener(new PopupMenuCommandListener());
-        //updateDirectory(this.directory);
+
+        this.updateDirectory(directory);
     }
 
     public void updateDirectory(File directory) {
+        this.setBackground(Colors.DEFAULT);
         this.setLayout(null);
-        this.directory = directory;
+        this.directory = directory.getAbsoluteFile();
+
         // remove old
-        this.picFiles.clear();
-        System.out.println("init size:"+this.pictures.size());
+        this.removeListenerForThumbnails();
+        if (this.picFiles.size() > 0)
+            this.picFiles.clear();
         if (this.pictures.size() > 0) {
-            for (Thumbnail tb : this.pictures) {
-                this.remove(tb);
-            }
+            for (Thumbnail t : this.pictures)
+                this.remove(t);
             this.pictures.clear();
         }
+        if (this.selectedPictures.size() > 0)
+            this.selectedPictures.clear();
 
-        
-        // add new
-        
-        /*
-        for (File f : this.directory.listFiles()) {
-            if (FileUtils.isPicture(f)) {
-                Thumbnail t = new Thumbnail(f);
-                this.pictures.add(t);
-                this.add(t);
-            }
-        }
-        
-        
-        for (Thumbnail tb : this.pictures) {
-            this.add(tb);
-        }
-        */
-
-        ExecutorService exector = Executors.newFixedThreadPool(6);
-        
-        for (File f : this.directory.listFiles()) {
+        // load thumbnails with multithreading
+        for (File f: this.directory.listFiles()) {
             if (FileUtils.isPicture(f)) {
                 this.picFiles.add(f);
             }
         }
+
+        ExecutorService exector = Executors.newFixedThreadPool(6);
+        int size = this.picFiles.size();
+        int interval = size/6;
         
-        
-        int temp = this.picFiles.size();
-        
-        ArrayList<Thumbnail>	tmparray1 = new ArrayList<Thumbnail>();
-        ArrayList<Thumbnail>	tmparray2 = new ArrayList<Thumbnail>();
-        ArrayList<Thumbnail>	tmparray3 = new ArrayList<Thumbnail>();
-        ArrayList<Thumbnail>	tmparray4 = new ArrayList<Thumbnail>();
-        ArrayList<Thumbnail>	tmparray5 = new ArrayList<Thumbnail>();
-        ArrayList<Thumbnail>	tmparray6 = new ArrayList<Thumbnail>();
-         
-        Runnable threading1 = new PicThreading(this.picFiles,this,tmparray1,this.directory,0,temp/6);
-        Runnable threading2 = new PicThreading(this.picFiles,this,tmparray2,this.directory,temp/6,temp/6*2);
-        Runnable threading3 = new PicThreading(this.picFiles,this,tmparray3,this.directory,temp/6*2,temp/6*3);
-        Runnable threading4 = new PicThreading(this.picFiles,this,tmparray4,this.directory,temp/6*3,temp/6*4);
-        Runnable threading5 = new PicThreading(this.picFiles,this,tmparray5,this.directory,temp/6*4,temp/6*5);
-        Runnable threading6 = new PicThreading(this.picFiles,this,tmparray6,this.directory,temp/6*5,temp);
+        ArrayList<Thumbnail> tmparray1 = new ArrayList<Thumbnail>();
+        ArrayList<Thumbnail> tmparray2 = new ArrayList<Thumbnail>();
+        ArrayList<Thumbnail> tmparray3 = new ArrayList<Thumbnail>();
+        ArrayList<Thumbnail> tmparray4 = new ArrayList<Thumbnail>();
+        ArrayList<Thumbnail> tmparray5 = new ArrayList<Thumbnail>();
+        ArrayList<Thumbnail> tmparray6 = new ArrayList<Thumbnail>();
+
+        Runnable threading1 = new PicThreading(this.picFiles, this, tmparray1, this.directory, 0, interval);
+        Runnable threading2 = new PicThreading(this.picFiles, this, tmparray2, this.directory, interval, interval*2);
+        Runnable threading3 = new PicThreading(this.picFiles, this, tmparray3, this.directory, interval*2, interval*3);
+        Runnable threading4 = new PicThreading(this.picFiles, this, tmparray4, this.directory, interval*3, interval*4);
+        Runnable threading5 = new PicThreading(this.picFiles, this, tmparray5, this.directory, interval*4, interval*5);
+        Runnable threading6 = new PicThreading(this.picFiles, this, tmparray6, this.directory, interval*5, size);
+
         exector.submit(threading1);
         exector.submit(threading2);
         exector.submit(threading3);
@@ -150,13 +136,7 @@ public class PreviewPanel extends JPanel implements FileSource, CommandSource {
         exector.submit(threading6);
         exector.shutdown();
        
-        while(true) {
-        	if(exector.isTerminated()) {
-        		System.out.println("all threading is done");
-        		break;
-        	}
-        	
-        }
+        while(!exector.isTerminated()); // wait until exector done
         
         this.pictures.addAll(tmparray1);
         this.pictures.addAll(tmparray2);
@@ -164,39 +144,34 @@ public class PreviewPanel extends JPanel implements FileSource, CommandSource {
         this.pictures.addAll(tmparray4);
         this.pictures.addAll(tmparray5);
         this.pictures.addAll(tmparray6);
-        System.out.println("tmparray1:"+tmparray1.size());
-        System.out.println("tmparray2:"+tmparray2.size());
-        System.out.println("tmparray3:"+tmparray3.size());
-        System.out.println("tmparray4:"+tmparray4.size());
-        System.out.println("tmparray5:"+tmparray5.size());
-        System.out.println("tmparray6:"+tmparray6.size());
-        System.out.println("thispictures:"+this.pictures.size());
+        
         for(int i=0;i<this.pictures.size();i++) {
-                this.pictures.get(i).setBounds(i%PIC_PER_ROW*THUMBNAILX+EXTEND_X,i/PIC_PER_ROW*THUMBNAILY+EXTEND_Y,THUMBNAILWIDTH,THUMBNAILHEIGHT);
+            this.pictures.get(i).setBounds(
+                i%PreviewPanel.PIC_PER_ROW*PreviewPanel.THUMBNAILX+PreviewPanel.EXTEND_X,
+                i/PreviewPanel.PIC_PER_ROW*PreviewPanel.THUMBNAILY+PreviewPanel.EXTEND_Y,
+                PreviewPanel.THUMBNAILWIDTH,
+                PreviewPanel.THUMBNAILHEIGHT);
         }
         
         this.addListenerForThumbnails();
-        
-        if(this.pictures.size()>PIC_PER_ROW*3) {
-        	previewScrollPane.getVerticalScrollBar().setVisible(true);
-        	if(this.pictures.size()%PIC_PER_ROW==0) {
-        		this.setPreferredSize(new Dimension(WIDTH1,HEIGHT1*(this.pictures.size()/PIC_PER_ROW)));
-        	
-        	}else {
-        		this.setPreferredSize(new Dimension(WIDTH1,HEIGHT1*(this.pictures.size()/PIC_PER_ROW+1)));
-        	}
-        	previewScrollPane.getVerticalScrollBar().setValue(0);
-        	
-        } else if(this.pictures.size()>=PIC_PER_ROW&&this.pictures.size()<PIC_PER_ROW*3){
-        	
-        	this.setSize(new Dimension(WIDTH3,HEIGHT3));
+        // configurating scroll pane
+        if(this.pictures.size()>PreviewPanel.PIC_PER_ROW*3) {
+            this.previewScrollPane.getVerticalScrollBar().setVisible(true);
+            if(this.pictures.size()%PreviewPanel.PIC_PER_ROW==0) {
+                this.setPreferredSize(new Dimension(PreviewPanel.WIDTH1,PreviewPanel.HEIGHT1*(this.pictures.size()/PreviewPanel.PIC_PER_ROW)));
+            }else {
+                this.setPreferredSize(new Dimension(PreviewPanel.WIDTH1,PreviewPanel.HEIGHT1*(this.pictures.size()/PreviewPanel.PIC_PER_ROW+1)));
+            }
+            this.previewScrollPane.getVerticalScrollBar().setValue(0);
+            
+        } else if(this.pictures.size()>=PreviewPanel.PIC_PER_ROW&&this.pictures.size()<PreviewPanel.PIC_PER_ROW*3){
+            
+            this.setSize(new Dimension(PreviewPanel.WIDTH3,PreviewPanel.HEIGHT3));
         }	else {
-        	this.setPreferredSize(new Dimension(this.pictures.size()*WIDTH2,this.pictures.size()/PIC_PER_ROW*HEIGHT1));
+            this.setPreferredSize(new Dimension(this.pictures.size()*PreviewPanel.WIDTH2,this.pictures.size()/PreviewPanel.PIC_PER_ROW*PreviewPanel.HEIGHT1));
         }
         
-        
         this.setCenterLocation();
-        
     }
 
     protected void panintComponent(Graphics g) {
@@ -237,6 +212,13 @@ public class PreviewPanel extends JPanel implements FileSource, CommandSource {
             Thumbnail t = this.pictures.get(i);
             t.addMouseListener(new SingleSelectListener());
             t.addMouseListener(new PopupMenuOpenListener());
+        }
+    }
+    public void removeListenerForThumbnails() {
+        for (int i = 0; i < this.pictures.size(); i++) {
+            Thumbnail t = this.pictures.get(i);
+            t.removeMouseListener(new SingleSelectListener());
+            t.removeMouseListener(new PopupMenuOpenListener());
         }
     }
 
@@ -403,8 +385,8 @@ public class PreviewPanel extends JPanel implements FileSource, CommandSource {
         for (CommandListener cl : this.CommandListeners)
             cl.actionPerformed(ce);
     }
-	public JScrollPane getPreviewScrollPane() {
-		return previewScrollPane;
-	}
+    public JScrollPane getPreviewScrollPane() {
+        return previewScrollPane;
+    }
     
 }
