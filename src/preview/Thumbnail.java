@@ -76,7 +76,7 @@ public class Thumbnail extends JPanel {
         double proportion = (double) image.getIconWidth() / image.getIconHeight();
         if (image.getIconWidth() > Thumbnail.WIDTH || image.getIconWidth() > Thumbnail.PICTUREHEIGHT)
             if (proportion > Thumbnail.WIDTH / Thumbnail.PICTUREHEIGHT)
-                i = i.getScaledInstance(Thumbnail.WIDTH, (int) (Thumbnail.WIDTH / proportion), Image.SCALE_FAST);
+                i = i.getScaledInstance(Thumbnail.WIDTH, (int) (Thumbnail.WIDTH / proportion), Image.SCALE_SMOOTH);
             else
                 i = i.getScaledInstance((int) (Thumbnail.PICTUREHEIGHT * proportion), Thumbnail.PICTUREHEIGHT,
                         Image.SCALE_FAST);

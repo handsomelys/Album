@@ -34,6 +34,9 @@ public class Main {
     DirectoryOperationList dol;
     ArrayList<File> selectedPictures;
     ArrayList<File> heldPictures;
+
+    MainCommandListener mcl;
+    MainFileListener mfl;
     
     public Main(File directory) {
         // initializing variable
@@ -47,8 +50,8 @@ public class Main {
         this.heldPictures = new ArrayList<File>();
         
         GridBagConstraints gbc = new GridBagConstraints();
-        MainCommandListener mcl = new MainCommandListener();
-        MainFileListener mfl = new MainFileListener();
+        this.mcl = new MainCommandListener();
+        this.mfl = new MainFileListener();
 
         JScrollPane previewScrollPane = new JScrollPane(previewPanel);
         
@@ -68,10 +71,10 @@ public class Main {
         this.dol.push(this.directory);
 
         // assigning listener
-        this.topbar.addListener(mcl);
-        this.previewPanel.addListener(mfl);
-        this.previewPanel.addListener(mcl);
-        this.tree.addListener(mcl);
+        this.topbar.addListener(this.mcl);
+        this.previewPanel.addListener(this.mfl);
+        this.previewPanel.addListener(this.mcl);
+        this.tree.addListener(this.mcl);
         this.mainFrame.addKeyListener(new CtrlListener());
 
         // deploying the components
@@ -100,9 +103,7 @@ public class Main {
         gbc.gridheight = 1;
         gbc.weightx = 6;
         gbc.weighty = 9;
-        //previewScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         this.mainFrame.add(previewScrollPane, gbc);
-        //System.out.println(previewPanel.getSize());
         this.mainFrame.requestFocus();
     }
 
@@ -229,9 +230,9 @@ public class Main {
                 Main.this.updateDirectory();
             } else if (command[0].equals("rename")) {
                 if (Main.this.selectedPictures.size() == 1)
-                    new FileRenameDialog(Main.this.selectedPictures.get(0));
+                    (new FileRenameDialog(Main.this.selectedPictures.get(0))).addListener(Main.this.mcl);
                 else if (Main.this.selectedPictures.size() > 1)
-                new FilesRenameDialog(Main.this.selectedPictures);
+                (new FilesRenameDialog(Main.this.selectedPictures)).addListener(Main.this.mcl);
                 //Main.this.updateDirectory();
             } else if (command[0].equals("refresh")) {
                 Main.this.selectedPictures.clear();
@@ -275,10 +276,8 @@ public class Main {
         } catch(Throwable e) {
             e.printStackTrace();
         }
-        // File d1 = new File("F:\\test__pic\\123");
-        // File f1 = new File(d1, "123.jpg");
-        File d2 = new File("image");
-        Main m = new Main(d2);
-        m.configureFileOperationButtons();
+        File test = new File("image");
+        Main m = new Main(test);
+        m.updateDirectory();
     }
 }

@@ -1,10 +1,4 @@
 package viewframe;
-import javax.swing.JFrame;
-import javax.swing.*;
-import javax.swing.JPanel;
-
-import javax.swing.JButton;
-import javax.imageio.ImageIO;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -19,10 +13,17 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.TimerTask;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import main.Text;
 import util.FileUtils;

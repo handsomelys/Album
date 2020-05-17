@@ -10,9 +10,9 @@ import javax.swing.JScrollPane;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.HashSet;
 
 import event.CommandEvent;
 import event.CommandListener;
@@ -170,8 +170,15 @@ public class PreviewPanel extends JPanel implements FileSource, CommandSource {
         }	else {
             this.setPreferredSize(new Dimension(this.pictures.size()*PreviewPanel.WIDTH2,this.pictures.size()/PreviewPanel.PIC_PER_ROW*PreviewPanel.HEIGHT1));
         }
-        
+
         this.setCenterLocation();
+        
+        // 为了修复刷新之后预览面板会白屏，只好让他刷新后选择一张图片再立刻取消选择
+        // ，目前还不知道怎么解决这个问题。。
+        if (this.pictures.size() > 0) {
+            this.pictures.get(0).select();
+            this.pictures.get(0).deselect();
+        }
     }
 
     protected void panintComponent(Graphics g) {

@@ -9,12 +9,17 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import java.io.File;
 
+import java.io.File;
+import java.util.HashSet;
+
+import event.CommandEvent;
+import event.CommandListener;
+import event.CommandSource;
 import main.Text;
 import util.FileUtils;
 
-public class FileRenameDialog extends JFrame {
+public class FileRenameDialog extends JFrame implements CommandSource {
     private static final long serialVersionUID = 1L;
 
     public File file;
@@ -22,6 +27,7 @@ public class FileRenameDialog extends JFrame {
     public JTextField textName;
     public JButton buttonConfirm;
     public JButton buttonCancel;
+    protected HashSet<CommandListener> listeners;
 
     public String getName() {
         return this.textName.getText();
@@ -33,23 +39,21 @@ public class FileRenameDialog extends JFrame {
         this.textName = new JTextField(this.file.getName());
         this.buttonConfirm = new JButton(Text.CONFIRM);
         this.buttonCancel = new JButton(Text.CANCEL);
+        this.listeners = new HashSet<CommandListener>();
 
         this.setTitle(Text.RENAME);
         this.setLayout(new GridBagLayout());
         this.setBounds(100, 100, 300, 100);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
-        
+
         this.buttonConfirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int result = JOptionPane.showConfirmDialog(
-                    FileRenameDialog.this, Text.CONFIRMRENAME, Text.RENAME, 0);
+                int result = JOptionPane.showConfirmDialog(FileRenameDialog.this, Text.CONFIRMRENAME, Text.RENAME, 0);
                 if (result == 0) {
-                    FileUtils.renameFile(FileRenameDialog.this.file,
-                        FileRenameDialog.this.getName());
-                    JOptionPane.showMessageDialog(FileRenameDialog.this,
-                        Text.RENAMESUCCESS, "success", 1);
+                    FileUtils.renameFile(FileRenameDialog.this.file, FileRenameDialog.this.getName());
+                    FileRenameDialog.this.notifyAll(new CommandEvent(FileRenameDialog.this, "refresh"));
                     FileRenameDialog.this.dispose();
                 }
             }
@@ -84,5 +88,19 @@ public class FileRenameDialog extends JFrame {
         gbc.weightx = 8;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         this.add(this.textName, gbc);
+    }
+    // event source method
+    @Override
+    public void addListener(CommandListener cl) {
+        this.listeners.add(cl);
+    }
+    @Override
+    public void removeListener(CommandListener cl) {
+        this.listeners.remove(cl);
+    }
+    @Override
+    public void notifyAll(CommandEvent ce) {
+        for (CommandListener cl: listeners)
+            cl.actionPerformed(ce);
     }
 }

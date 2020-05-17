@@ -1,22 +1,26 @@
 package dialog;
 
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.event.ActionListener;
-import java.io.File;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 
+import event.CommandEvent;
+import event.CommandListener;
+import event.CommandSource;
 import main.Text;
 import util.FileUtils;
 
-public class FilesRenameDialog extends JFrame {
+public class FilesRenameDialog extends JFrame implements CommandSource{
     private static final long serialVersionUID = 1L;
 
     public ArrayList<File> files;
@@ -28,6 +32,7 @@ public class FilesRenameDialog extends JFrame {
     public JTextField textBit;
     public JButton buttonConfirm;
     public JButton buttonCancel;
+    protected HashSet<CommandListener> listeners;
 
     public String getName() {
         return this.textName.getText();
@@ -51,6 +56,7 @@ public class FilesRenameDialog extends JFrame {
         this.textBit = new JTextField("4");
         this.buttonConfirm = new JButton(Text.CONFIRM);
         this.buttonCancel = new JButton(Text.CANCEL);
+        this.listeners = new HashSet<CommandListener>();
 
         this.setTitle(Text.RENAME);
         this.setLayout(new GridBagLayout());
@@ -68,8 +74,6 @@ public class FilesRenameDialog extends JFrame {
                         FilesRenameDialog.this.getName(),
                         FilesRenameDialog.this.getIndex(),
                         FilesRenameDialog.this.getBit());
-                    JOptionPane.showMessageDialog(FilesRenameDialog.this,
-                        Text.RENAMESUCCESS, "success", 1);
                     FilesRenameDialog.this.dispose();
                 }
             }
@@ -112,5 +116,19 @@ public class FilesRenameDialog extends JFrame {
         this.add(this.textIndex, gbc);
         gbc.gridy = 2;
         this.add(this.textBit, gbc);
+    }
+    // event source method
+    @Override
+    public void addListener(CommandListener cl) {
+        this.listeners.add(cl);
+    }
+    @Override
+    public void removeListener(CommandListener cl) {
+        this.listeners.remove(cl);
+    }
+    @Override
+    public void notifyAll(CommandEvent ce) {
+        for (CommandListener cl: listeners)
+            cl.actionPerformed(ce);
     }
 }

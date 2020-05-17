@@ -1,9 +1,9 @@
 package tree;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import java.io.File;
 import java.io.IOException;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 public class FileNode extends DefaultMutableTreeNode {
 	/**
